@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 3.8.1
-Stable tag: 1.2
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,12 +28,12 @@ plUpload to quickly add file attachments with no need for page refreshes.
 See [MailCWP Plugin](http://cadreworks.com/mailcwp-plugin) for more information.
 
 Several add-ons are available to enhance this plugin:
-1. [MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book) - Manage your email contacts. 
-1. [MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search) - Use a wide range of criteria to find mail messages.
-1. [MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer) - A WYSIWYG, rich-text editor.
-1. [MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders) - Create, rename, move and remove IMAP folders. Copy and move messages across folders.
-1. [MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures) - Add signatures to every email message.
-1. Many more add-ons coming soon including a number of enterprise features.
+* [MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book) - Manage your email contacts. 
+* [MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search) - Use a wide range of criteria to find mail messages.
+* [MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer) - A WYSIWYG, rich-text editor.
+* [MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders) - Create, rename, move and remove IMAP folders. Copy and move messages across folders.
+* [MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures) - Add signatures to every email message.
+* Many more add-ons coming soon including a number of enterprise features.
 
 == Installation ==
 
@@ -61,6 +61,9 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.3 =
+* Minor corrections to readme.txt
+
 = 1.2 =
 * Fix for blank multipart/alternative messages
 
@@ -71,6 +74,9 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 * First release
 
 == Upgrade Notice ==
+
+= 1.3 =
+Minor corrections to readme.txt
 
 = 1.2 =
 Fix for blank multipart/alternative messages

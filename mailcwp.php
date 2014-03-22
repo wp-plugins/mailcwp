@@ -4,7 +4,7 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.1
+Version: 1.3
 Author URI: http://cadreworks.com
 */
 
