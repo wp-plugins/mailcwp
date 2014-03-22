@@ -75,7 +75,7 @@ function mailcwp_install() {
 }
 
 function mailcwp_uninstall() {
-  $users = get_users();
+  /*$users = get_users();
   foreach ($users as $user) {
     delete_user_meta($user->ID, "mailcwp_contacts");
     delete_user_meta($user->ID, "mailcwp_session");
@@ -88,7 +88,7 @@ function mailcwp_uninstall() {
   $upload_dir = wp_upload_dir();
   rmdir("$upload_dir[basedir]/mailcwp/uploads"); 
   rmdir("$upload_dir[basedir]/mailcwp/uploads"); 
-  rmdir("$upload_dir[basedir]/mailcwp"); 
+  rmdir("$upload_dir[basedir]/mailcwp"); */
 }
 
 function mailcwp_profile_fields( $user ) {
@@ -1637,6 +1637,8 @@ function mailcwp_compose_callback () {
         } else {
           $cc = "";
         }
+      } else {
+        $cc = "";
       }
     } else if ($mode == COMPOSE_EDIT_DRAFT) {
       $to = $original_to;
@@ -1958,7 +1960,7 @@ function create_message(&$headers, &$message, $for_draft = false) {
 	$message .= "\r\n" . chunk_split(base64_encode($forward_data)) . "\r\n";
       }
     }
-    $message .= "\r\n\r\n\r\n--$boundary\r\n\r\n";
+    $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
   } else {
     /*$part1["type"] = TYPEMULTIPART;
     $part1["subtype"] = "alternative";
@@ -1978,7 +1980,7 @@ function create_message(&$headers, &$message, $for_draft = false) {
     //$alt_boundary = "------=".md5(uniqid(rand()));
     $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
     $message = "\r\n\r\n--$boundary\r\nContent-Type: text/plain;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($plain_text_message) . "\r\n\r\n--$boundary\r\nContent-Type: text/html;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);;
-    $message .= "\r\n\r\n\r\n--$boundary\r\n\r\n";
+    $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
   }
   //$result = imap_mail_compose($envelope, $body);
   //return $result;
