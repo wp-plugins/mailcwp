@@ -4,10 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.3
+Version: 1.4
 Author URI: http://cadreworks.com
 */
 
+define ('MAILCWP_VERSION', 1.4);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -96,13 +97,13 @@ function mailcwp_profile_fields( $user ) {
   $user_can_manage_accounts = isset($options["user_manage_accounts"]) ? $options["user_manage_accounts"] : true;
 //write_log("USER CAN MANAGE " . is_super_admin() . "/" . $user_can_manage_accounts);
   if (is_super_admin() || $user_can_manage_accounts) { 
-    echo "<h3>CW Mail Accounts<a href=\"javascript:void(0);\" class=\"add-new-h2\" id=\"mailcwp-add-account\" data=\"$user->ID\">Add New</a></h3>";
+    /*echo "<h3>CW Mail Accounts<a href=\"javascript:void(0);\" class=\"add-new-h2\" id=\"mailcwp-add-account\" data=\"$user->ID\">Add New</a></h3>";
     echo "<div id=\"account-profile-table\">";
     $account_table = new MailAdminTable($user->ID);
     $account_table->prepare_items();
     $account_table->display();
     echo "</div>";
-    echo mailcwp_account_edit_dialog($user->ID);
+    echo mailcwp_account_edit_dialog($user->ID);*/
   }
 }
 
@@ -1849,11 +1850,11 @@ function create_message(&$headers, &$message, $for_draft = false) {
   $envelope["subject"] = $subject;
   $envelope["date"] = $now;
   $envelope["reply_to"] = $from;
-  $envelope["custom_headers"] = array("X-Mailer: MailCWP 1.1");*/
+  $envelope["custom_headers"] = array("X-Mailer: MailCWP ");*/
   $headers = "From: $from\r\n" .
              "Date: $now\r\n" . 
              "Reply-To: $from\r\n".
-             "X-Mailer: MailCWP 1.1\r\n";
+             "X-Mailer: MailCWP i" . MAILCWP_VERSION . "\r\n";
   if ($for_draft) {
     $headers .= "To: $to\r\n" .
                 "Subject: $subject\r\n";
@@ -2528,7 +2529,7 @@ function mailcwp_handler ($atts, $content, $tag) {
     </div>
   </div>
   <div id="mailcwp_prologue">
-    <span><a href="http://cadreworks.com/mailcwp-plugin">MailCWP version 1.1 by CadreWorks Pty Ltd, 2014</a></span>
+    <span><a href="http://cadreworks.com/mailcwp-plugin">MailCWP version <?php echo MAILCWP_VERSION ?> by CadreWorks Pty Ltd, 2014</a></span>
   </div>
   <script type="text/javascript">
     <?php if ($hide_admin_bar) { ?>
