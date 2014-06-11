@@ -1838,7 +1838,8 @@ function create_message(&$headers, &$message, $for_draft = false) {
     $forward_attachments = array();
   }
 //write_log("SEND POST " . print_r($_POST, true));
-  $now = date("d-M-Y H:i:s"); 
+  //$now = date("d-M-Y H:i:s"); 
+  $now = date("D, d-M-Y H:i:s O"); 
   /*$envelope["from"] = $from;
   $envelope["to"] = $to;
   if (!empty($cc)) {

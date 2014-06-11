@@ -3,8 +3,8 @@ Contributors: CadreWorks Pty Ltd
 Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
-Tested up to: 3.9.1
-Stable tag: 1.4
+Tested up to: 3.9.2
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,9 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.5 =
+Fix for date issue when sending mail
+
 = 1.4 =
 Remove MailCWP settings from User Profile page to avoid conflicts.
 
@@ -77,6 +80,9 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.5 =
+Fix for date issue when sending mail
 
 = 1.4 =
 Remove MailCWP settings from User Profile page to avoid conflicts.
