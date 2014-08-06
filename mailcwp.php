@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.7
+Version: 1.8
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.7);
+define ('MAILCWP_VERSION', 1.8);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -790,6 +790,9 @@ function mailcwp_scripts() {
     wp_register_style('jquery_ui_styles', plugins_url('/css/jquery-ui.min.css', __FILE__));
     wp_enqueue_style('jquery_ui_styles');
 
+    wp_register_style('cssreset_styles', plugins_url('/css/reset-context-min.css', __FILE__));
+    wp_enqueue_style('cssreset_styles');
+
     wp_register_style('theme_switch_ui_styles', plugins_url('/css/jquery.jui_theme_switch.css', __FILE__));
     wp_enqueue_style('theme_switch_ui_styles');
 
@@ -1182,7 +1185,7 @@ function mailcwp_get_headers_callback () {
 
   $sent_folder = "";
   if (is_array($account)) {
-    $sent_folder = $account["sent_folder"];
+    $sent_folder = isset($account["sent_folder"]) ? $account["sent_folder"] : null;
     if (empty($sent_folder)) {
       $sent_folder = mailcwp_find_folder($mbox, $account, "Sent");
     }
@@ -1307,6 +1310,16 @@ function mailcwp_get_headers_callback () {
   die();
 }
 
+function my_error_handler($errno, $errstr, $errfile, $errline) {
+  if ( preg_match('/iconv/', $errstr) ) {
+    throw new Exception('iconv error');
+  } else {
+    restore_error_handler();
+    trigger_error($errstr, $errno);
+    set_error_handler('my_error_handler', E_ALL);
+  }
+}
+
 function mailcwp_get_message_callback() {
   $mailcwp_session = mailcwp_get_session();
   if (!isset($mailcwp_session) || empty($mailcwp_session)) {
@@ -1392,7 +1405,13 @@ function mailcwp_get_message_callback() {
   }
 
   if (!empty($char_set)) {
-    $decoded_subject = iconv($char_set, "utf-8", $decoded_subject);
+    set_error_handler('my_error_handler', E_ALL);
+    try {
+      $decoded_subject = iconv($char_set, "utf-8", $decoded_subject);
+    } catch (exception $e) {
+      //$decoded_subject .= $decoded_subject;
+    }
+    restore_error_handler();
   }
    
   $date_str = date("D, j M Y g:i:m a", strtotime(substr($headers->MailDate, 0, strrpos($headers->MailDate, " "))));
@@ -1447,13 +1466,17 @@ function mailcwp_get_message_callback() {
   $html .= "  <div id=\"mailcwp-content-$dialog_id\" class=\"mailcwp_content ui-widget-content ui-corner-bottom\">";
   //$html .= (isset($message->getHtmlMessage()) ? $message->getHtmlMessage() : $message->getPlainMessage());
   if (isset($html_message) && !empty($html_message)) {
-    $html .= "<div class=\"mailcwp_html_message\">";
+    $html .= "<div class=\"mailcwp_html_message yui3-cssreset\">";
     if (!empty($char_set)) {
+      set_error_handler('my_error_handler', E_ALL);
       try {
-        $html .= iconv($char_set, "utf-8", $html_message);
+        //ini_set('mbstring.substitute_character', "none"); 
+        //$html = mb_convert_encoding($html_message, 'UTF-8', $char_set); 
+        $html .= iconv($char_set, "utf-8//IGNORE", $html_message);
       } catch (exception $e) {
-        $html .= $html_message;
+        $html .= htmlspecialchars($html_message);
       }
+      restore_error_handler();
     } else {
       $html .= $html_message;
     }
@@ -1620,6 +1643,8 @@ function mailcwp_compose_callback () {
     }
 
     $from = "$account[name] <$account[email]>";
+    $original_date = date("D j F Y", mailcwp_get_imap_decoded_string($headers->udate));
+    $original_time = date("g:ia", mailcwp_get_imap_decoded_string($headers->udate));
     $original_from = mailcwp_get_imap_decoded_string($headers->fromaddress);
     $original_to = isset($headers->toaddress)  ? mailcwp_get_imap_decoded_string($headers->toaddress) : "";
 //write_log($mode);
@@ -1668,11 +1693,13 @@ function mailcwp_compose_callback () {
       if ($mode != COMPOSE_EDIT_DRAFT) {
         $message = preg_replace("/(^|<br\/>)/i", "<br/>&gt; ", $message);
       }
+      $message = "On $original_date, at $original_time, $original_from wrote:<br/>$message";
     } else {
       $message = $plain_message;
       if ($mode != COMPOSE_EDIT_DRAFT) {
         $message = preg_replace("/(^|\\n)/", "\n> ", $message);
       }
+      $message = "On $original_date, at $original_time, $original_from wrote:\n$message";
     }
   } else {
     $from = "$account[name] <$account[email]>";
@@ -1837,21 +1864,7 @@ function create_message(&$headers, &$message, $for_draft = false) {
   } else {
     $forward_attachments = array();
   }
-//write_log("SEND POST " . print_r($_POST, true));
-  //$now = date("d-M-Y H:i:s"); 
   $now = date("D, d-M-Y H:i:s O"); 
-  /*$envelope["from"] = $from;
-  $envelope["to"] = $to;
-  if (!empty($cc)) {
-    $envelope["cc"] = $cc;
-  }
-  if (!empty($bcc)) {
-    $envelope["bcc"] = $bcc;
-  }
-  $envelope["subject"] = $subject;
-  $envelope["date"] = $now;
-  $envelope["reply_to"] = $from;
-  $envelope["custom_headers"] = array("X-Mailer: MailCWP ");*/
   $headers = "From: $from\r\n" .
              "Date: $now\r\n" . 
              "Reply-To: $from\r\n".
@@ -1879,62 +1892,29 @@ function create_message(&$headers, &$message, $for_draft = false) {
   }
 
   $plain_text_message = preg_replace("/<br[^>]*[\/]{0,1}>/i", "\n", $message);
-  $plain_text_message = preg_replace("/<\/li>/i", "\n", $message);
-  $plain_text_message = preg_replace("/<p[^>]*[\/]{0,1}>/i", "\n\n", $message);
-  $plain_text_message = preg_replace("/<\/[ou]l>/i", "\n", $message);
+  $plain_text_message = preg_replace("/<\/li>/i", "\n", $plain_text_message);
+  $plain_text_message = preg_replace("/<p[^>]*[\/]{0,1}>/i", "\n\n", $plain_text_message);
+  $plain_text_message = preg_replace("/<\/[ou]l>/i", "\n", $plain_text_message);
   $plain_text_message = html_entity_decode($plain_text_message);
   $plain_text_message = strip_tags($plain_text_message);
 
-//write_log("PLAIN TEXT MESSAGE " . $plain_text_message);
-  //write_log("UNIQUE ID: $unique_id (" . plugin_dir_path(__FILE__) . "uploads/$unique_id-*");
   $upload_dir = wp_upload_dir();
   $mailcwp_upload_dir = "$upload_dir[basedir]/mailcwp/uploads"; 
   $uploaded_files = glob("$mailcwp_upload_dir/$unique_id-*");
   if (is_array($uploaded_files) && count($uploaded_files) > 0 || !empty($forward_attachments)) {
-    /*$part1["type"] = TYPEMULTIPART;
-    $part1["subtype"] = "mixed";
-
-    //$part2["type"] = TYPEMULTIPART;
-    //$part2["subtype"] = "alternative";
-
-    //$part3["type"] = TYPETEXT;
-    //$part3["subtype"] = "plain";
-    //$part3["contents.data"] = $plain_text_message;
-
     $part2["type"] = TYPETEXT;
     $part2["subtype"] = "html";
     $part2["contents.data"] = $message;
 
-    //$part2["contents.data"][1] = $part3;
-    //$part2["contents.data"][2] = $part4;
-
-    $body[1] = $part1;
-    $body[2] = $part2;*/
     $boundary = "------=".md5(uniqid(rand()));
-    //$alt_boundary = "------=".md5(uniqid(rand()));
     $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
-    //$message = "\r\n\r\n--$boundary\r\nContent-Type: multipart/alternative; boundary=\"$alt_boundary\"\r\n";
-    //$message = "\r\n\r\n--$boundary\r\nContent-Type: multipart/alternative;\r\n";
-    //$message = "\r\n\r\n--$boundary\r\nContent-Type: text/plain; charset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($plain_text_message) . "\r\n\r\n--$boundary\r\nContent-Type: text/html; charset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);;
     $message = "\r\n\r\n--$boundary\r\nContent-Type: text/html; charset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);
     //process attachments
     //find files
     //if files found, read each one and generate attachment string
-    //$part_counter = 3;
-    //$part = array();
     if (is_array($uploaded_files)) {
       foreach ($uploaded_files as $uploaded_file) {
 	$basename = substr(basename($uploaded_file), strlen($unique_id) + 1);
-        /*unset($part);
-        $part["type"] = TYPEAPPLICATION;
-        $part["encoding"] = ENCBASE64;
-        $part["subtype"] = "octet-stream";
-        $part["description"] = $basename;
-        $part["disposition.type"] = "attachment";
-        $part["disposition"] = array("filename" => $basename);
-        $part["type.parameters"] = array("name" => $basename);
-        $part["contents.data"] = chunk_split(base64_encode(file_get_contents($uploaded_file)));
-        $body[$part_counter++] = $part;*/
 	$message .= "\r\n\r\n";
 	$message .= "--$boundary\r\n";
 	$message .= "Content-Transfer-Encoding: base64\r\n";
@@ -1945,16 +1925,6 @@ function create_message(&$headers, &$message, $for_draft = false) {
     }
     if (!empty($forward_attachments)) {
       foreach ($forward_attachments as $forward_filename => $forward_data) {
-        /*unset($part);
-        $part["type"] = TYPEAPPLICATION;
-        $part["encoding"] = ENCBASE64;
-        $part["subtype"] = "octet-stream";
-        $part["description"] = $forward_filename;
-        $part["disposition.type"] = "attachment";
-        $part["disposition"] = array("filename" => $forward_filename);
-        $part["type.parameters"] = array("name" => $forward_filename);
-        $part["contents.data"] = chunk_split(base64_encode($forward_data));
-        $body[$part_counter++] = $part;*/
 	$message .= "\r\n\r\n";
 	$message .= "--$boundary\r\n";
 	$message .= "Content-Transfer-Encoding: base64\r\n";
@@ -1964,37 +1934,16 @@ function create_message(&$headers, &$message, $for_draft = false) {
     }
     $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
   } else {
-    /*$part1["type"] = TYPEMULTIPART;
-    $part1["subtype"] = "alternative";
-
-    $part2["type"] = TYPETEXT;
-    $part2["subtype"] = "plain";
-    $part2["contents.data"] = $plain_text_message;
-
-    $part3["type"] = TYPETEXT;
-    $part3["subtype"] = "html";
-    $part3["contents.data"] = $message;
-
-    $body[1] = $part1;
-    $body[2] = $part2;
-    $body[3] = $part3;*/
     $boundary = "------=".md5(uniqid(rand()));
-    //$alt_boundary = "------=".md5(uniqid(rand()));
     $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
     $message = "\r\n\r\n--$boundary\r\nContent-Type: text/plain;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($plain_text_message) . "\r\n\r\n--$boundary\r\nContent-Type: text/html;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);;
     $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
   }
-  //$result = imap_mail_compose($envelope, $body);
-  //return $result;
-//write_log($headers);
-//write_log($message);
   return true;
 }
 
 function mailcwp_save_draft_callback () {
-//write_log($_POST);
   create_message($headers, $message, true);
-//write_log($headers, $message);
   $mailcwp_session = mailcwp_get_session();
   if (!isset($mailcwp_session) || empty($mailcwp_session)) {
     return;

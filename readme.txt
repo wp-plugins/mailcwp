@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 3.9.2
-Stable tag: 1.7
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,6 +61,9 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.8 =
+v1.7 release did not included fix
+
 = 1.7 =
 Fix for no response when opening mail that includes HTML content or attachments
 
@@ -86,6 +89,9 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.8 =
+v1.7 release did not included fix
 
 = 1.7 =
 Fix for no response when opening mail that includes HTML content or attachments
