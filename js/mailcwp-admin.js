@@ -172,6 +172,33 @@ function editAccount(aName, aAccountId, aUserId, aFullForm) {
   }
 }
 
+function submitAccountEditForm() {
+  jQuery.ajax({
+    type: "POST",
+    url: ajaxurl,
+    data: {
+      action: "mailcwp_edit_account",
+      mailcwp_account_id: jQuery("#mailcwp_account_id").val(),
+      mailcwp_user_id: jQuery("#mailcwp_user_id").val(),
+      mailcwp_name: jQuery("#mailcwp_name").val(),
+      mailcwp_host: jQuery("#mailcwp_host").val(),
+      mailcwp_port: jQuery("#mailcwp_port").val(),
+      mailcwp_use_ssl: jQuery("#mailcwp_use_ssl").prop("checked"),
+      mailcwp_validate_cert: jQuery("#mailcwp_validate_cert").prop("checked"),
+      mailcwp_email: jQuery("#mailcwp_email").val(),
+      mailcwp_username: jQuery("#mailcwp_username").val(),
+      mailcwp_password: jQuery("#mailcwp_password").val(),
+      mailcwp_use_tls: jQuery("#mailcwp_use_tls").prop("checked"),
+    },
+    success: function(aData) {
+      processAjaxResponse(aData);
+    },
+    error: function(aObject, aTextStatus, aErrorThrown) {
+      alert("Error: " + aTextStatus + "/" + aErrorThrown);
+    }
+  });
+}
+
 function displayAccount($account, $user_id) {
   jQuery("#mailcwp_account_id").val($account == null ? "" : $account.id);
   jQuery("#mailcwp_user_id").val($user_id == null ? "" : $user_id);

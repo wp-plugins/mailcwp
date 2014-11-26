@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.8
+Version: 1.9
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.8);
+define ('MAILCWP_VERSION', 1.9);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -97,13 +97,13 @@ function mailcwp_profile_fields( $user ) {
   $user_can_manage_accounts = isset($options["user_manage_accounts"]) ? $options["user_manage_accounts"] : true;
 //write_log("USER CAN MANAGE " . is_super_admin() . "/" . $user_can_manage_accounts);
   if (is_super_admin() || $user_can_manage_accounts) { 
-    /*echo "<h3>CW Mail Accounts<a href=\"javascript:void(0);\" class=\"add-new-h2\" id=\"mailcwp-add-account\" data=\"$user->ID\">Add New</a></h3>";
+    echo "<h3>Mail Accounts<a href=\"javascript:void(0);\" class=\"add-new-h2\" id=\"mailcwp-add-account\" data=\"$user->ID\">Add New</a></h3>";
     echo "<div id=\"account-profile-table\">";
     $account_table = new MailAdminTable($user->ID);
     $account_table->prepare_items();
     $account_table->display();
     echo "</div>";
-    echo mailcwp_account_edit_dialog($user->ID);*/
+    echo mailcwp_account_edit_dialog($user->ID);
   }
 }
 
@@ -214,7 +214,7 @@ function mailcwp_account_edit_dialog($user_id, $account = null, $full_form = fal
 
   $result = 
   '<div id="account-edit-form" style="display: none; border: 1px solid black; padding: 10px;">' .
-  '<form>' .
+  //'<form>' .
   '<input type="hidden" id="mailcwp_user_id" name="mailcwp_user_id" value="' . $user_id . '"/>' .
   '<input type="hidden" id="mailcwp_account_id" name="mailcwp_account_id" value="' . (isset($account) ? $account["id"] : "") . '"/>' .
   '<fieldset>' .
@@ -251,8 +251,8 @@ function mailcwp_account_edit_dialog($user_id, $account = null, $full_form = fal
   }
   $result .= $after_form;
   $result .= '</fieldset>' .
-  '<input type="button" class="button button-primary" name="Test" value="Test" id="account-edit-test"/>&nbsp;<input type="button" class="button button-primary" name="Save" value="Save" id="account-edit-save"/>&nbsp;<input type="button" class="button button-primary" name="Cancel" value="Cancel" id="account-edit-cancel" onclick="jQuery(\'#account-edit-form\').hide(); jQuery(\'#account-profile-table\').show();"/>' .
-  '</form>' .
+  '<input type="button" class="button button-primary" name="Test" value="Test" id="account-edit-test"/>&nbsp;<input type="button" class="button button-primary" name="Save" value="Save" id="account-edit-save" onclick="submitAccountEditForm(); return false;"/>&nbsp;<input type="button" class="button button-primary" name="Cancel" value="Cancel" id="account-edit-cancel" onclick="jQuery(\'#account-edit-form\').hide(); jQuery(\'#account-profile-table\').show();"/>' .
+  //'</form>' .
   '</div>';
   return $result;
 }
@@ -1470,9 +1470,18 @@ function mailcwp_get_message_callback() {
     if (!empty($char_set)) {
       set_error_handler('my_error_handler', E_ALL);
       try {
-        //ini_set('mbstring.substitute_character', "none"); 
-        //$html = mb_convert_encoding($html_message, 'UTF-8', $char_set); 
-        $html .= iconv($char_set, "utf-8//IGNORE", $html_message);
+        ini_set('mbstring.substitute_character', "none"); 
+        $conv_msg = @iconv($char_set, "utf-8//IGNORE", $html_message);
+        if ($conv_msg == null) {
+          $conv_msg = @mb_convert_encoding($html_message, 'UTF-8', $char_set); 
+        }
+        if ($conv_msg == null) {
+          $conv_msg = @utf8_encode($html_message);
+        }
+        if ($conv_msg == null) {
+          $conv_msg = $html_message;
+        }
+        $html .= $conv_msg;
       } catch (exception $e) {
         $html .= htmlspecialchars($html_message);
       }
@@ -1481,9 +1490,13 @@ function mailcwp_get_message_callback() {
       $html .= $html_message;
     }
     $html .= "</div>";
+  } else if (isset($plain_message) && !empty($plain_message)) {
+    //$html .= "<pre>" . $plain_message . "</pre>";
+    $html .= "<pre>" . substr($plain_message, 0, 2048) . "</pre>";
   } else {
-    $html .= "<pre>" . $plain_message . "</pre>";
+    $html .= "<pre>NO HTML OR PLAIN TEXT</pre>";
   }
+
   if (isset($attachments) && sizeof($attachments) > 0) {
     foreach ($attachments as $filename=>$data) {
       $path_parts = pathinfo($filename);
@@ -1518,7 +1531,12 @@ function mailcwp_get_message_callback() {
   $javascript.= "  jQuery(\"#attachment_list\").hide().menu();";
   $javascript.= apply_filters("mailcwp_received_javascript", "");
 
-  $result = array("result" => "OK", "html" => $html, "javascript" => $javascript);
+  $utf8_html = @utf8_encode($html);
+  if ($utf8_html == null) {
+    $utf8_html = $html;
+  }
+
+  $result = array("result" => "OK", "html" => $utf8_html, "javascript" => $javascript);
   echo json_encode($result);
   die();
 }

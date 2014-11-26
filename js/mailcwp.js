@@ -775,7 +775,7 @@ function getMessage(aFolderName, aMessageNumber, aSubject) {
         display_notice("Unable to fetch headers: " + aTextStatus + "/" + aErrorThrown); 
       }, 
       success: function (aData) { 
-        //console.log(aData);
+        console.log(aData);
         jQuery("#progressbar").hide();
         processAjaxResponse(aData);
       }

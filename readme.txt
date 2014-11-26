@@ -61,6 +61,10 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.9 =
+Fix for character encoding issue causing mail open failure.
+Reintroduce MailCWP account editor in user profile pages and fix conflicts.
+
 = 1.8 =
 v1.7 release did not included fix
 
@@ -89,6 +93,10 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.9 =
+Fix for character encoding issue causing mail open failure.
+Reintroduce MailCWP account editor in user profile pages and fix conflicts.
 
 = 1.8 =
 v1.7 release did not included fix

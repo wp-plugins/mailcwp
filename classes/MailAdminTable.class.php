@@ -103,5 +103,24 @@ class MailAdminTable extends WP_List_Table {
             '<input type="checkbox" name="account[]" value="%s" />', $item["id"]
         );
   }
+
+  function display_tablenav( $which ) {
+	if ( 'top' == $which )
+                        //wp_nonce_field( 'bulk-' . $this->_args['plural'] );
+?>
+        <div class="tablenav <?php echo esc_attr( $which ); ?>">
+  
+                <div class="alignleft actions bulkactions">
+                        <?php $this->bulk_actions(); ?>
+                </div>
+<?php 
+                $this->extra_tablenav( $which );
+                $this->pagination( $which );
+?>
+
+                <br class="clear" />
+        </div>
+<?php       
+  }
 }
 ?>
