@@ -21,19 +21,10 @@ your staff, avoiding the time, effort and cost of maintaining a separate WebMail
 
 MailCWP is designed to be responsive and feature rich. Powered by jQuery and
 AJAX the system responds quickly to user requests. Using jQuery UI (with
-jui_theme_switch) it looks great. With the Composer add-on, poewred by
-TinyMCE, rich-text WYSIWYG editing is possible. Attachments are managed using
+jui_theme_switch) it looks great. Attachments are managed using
 plUpload to quickly add file attachments with no need for page refreshes.
 
 See [MailCWP Plugin](http://cadreworks.com/mailcwp-plugin) for more information.
-
-Several add-ons are available to enhance this plugin:
-* [MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book) - Manage your email contacts. 
-* [MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search) - Use a wide range of criteria to find mail messages.
-* [MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer) - A WYSIWYG, rich-text editor.
-* [MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders) - Create, rename, move and remove IMAP folders. Copy and move messages across folders.
-* [MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures) - Add signatures to every email message.
-* Many more add-ons coming soon including a number of enterprise features.
 
 == Installation ==
 
