@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.9
+Version: 1.91
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.9);
+define ('MAILCWP_VERSION', 1.91);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -802,7 +802,7 @@ function mailcwp_scripts() {
     wp_enqueue_script( 'jquery-ui-accordion' );
     wp_enqueue_script( 'jquery-ui-autocomplete' );
     wp_enqueue_script( 'jquery-ui-tabs' );
-    wp_enqueue_script( 'jquery-ui-selectable' );
+    //wp_enqueue_script( 'jquery-ui-selectable' );
     wp_enqueue_script( 'jquery-ui-tooltip' );
     wp_enqueue_script( 'jquery-ui-dialog' );
     wp_enqueue_script( 'jquery-ui-button' );
@@ -1374,6 +1374,7 @@ function mailcwp_get_message_callback() {
 	  } else {
 	    $extension = "";
 	  }
+          $html = "";
 	  if (preg_match("(png|gif|jpg)", $extension) == 1) {
 	    $encoded_image = base64_encode($attachments[$vCidName]);
 	    $html = "src=\"data:image/$extension;base64,$encoded_image\"";
@@ -1649,6 +1650,7 @@ function mailcwp_compose_callback () {
 	    } else {
 	      $extension = "";
 	    }
+            $html = "";
 	    if (preg_match("(png|gif|jpg)", $extension) == 1) {
 	      $encoded_image = base64_encode($attachments[$vCidName]);
 	      $html = "src=\"data:image/$extension;base64,$encoded_image\"";
@@ -2372,7 +2374,9 @@ function mailcwp_handler ($atts, $content, $tag) {
   $smarty->setCacheDir(plugin_dir_path(__FILE__) . '/cache');
 
   if (!is_user_logged_in()) {
-    wp_die(__("Please login to view this page."));
+    //wp_die(__("Please login to view this page."));
+    wp_redirect(wp_login_url("$_SERVER[PHP_SELF]"));
+    exit;
   }
 
   //add_filter( 'show_admin_bar', '__return_false' );
@@ -2541,11 +2545,19 @@ function folder_menu($account_id, $folder_tree, $prefix = "", $root = false) {
   $class = $root ? "mailcwp_folders" : "";
   if (!empty($folder_tree)) {
     $result = "<ul class=\"$class\">";
-    $keys = array_keys($folder_tree);
-    foreach ($keys as $key) {
+    if (isset($folder_tree["INBOX"])) {
+      $key = 'INBOX';
       $result .= "<li><a href=\"javascript:void(0)\" onclick=\"getHeaders(false, 1, '$prefix$key', '$account_id')\">$key</a>";
       $result .= folder_menu($account_id, $folder_tree[$key], "$prefix$key.");
       $result .= "</li>";
+    }
+    $keys = array_keys($folder_tree);
+    foreach ($keys as $key) {
+      if ($key != 'INBOX') {
+	$result .= "<li><a href=\"javascript:void(0)\" onclick=\"getHeaders(false, 1, '$prefix$key', '$account_id')\">$key</a>";
+	$result .= folder_menu($account_id, $folder_tree[$key], "$prefix$key.");
+	$result .= "</li>";
+      }
     }
     $result .= "</ul>";
   }

@@ -731,7 +731,7 @@ function getHeaders(aAllAccounts, aPage, aFolder, aAccount) {
         jQuery("#progressbar").hide();
         mPage = aPage;
         jQuery("#mailcwp_headers").html(aHtml);
-        jQuery("#mailcwp_headers tbody").selectable({
+        /*jQuery("#mailcwp_headers tbody").selectable({
           selected: function(e, ui) {
             vId = "#" + ui.selected.id;
             if (vId.indexOf("#action-") == 0) {
@@ -746,7 +746,7 @@ function getHeaders(aAllAccounts, aPage, aFolder, aAccount) {
             }
             jQuery(document).trigger("mailcwp_message_selection_off");
           }
-        });
+        });*/
         jQuery(".mailcwp_answered span.ui-icon-arrowreturnthick-1-w").show();
         if (mRefreshQueue.length > 0) {
           vArgs = mRefreshQueue.splice(0, 1);

@@ -208,3 +208,7 @@ input[id^='mailcwp_from'], input[id^='mailcwp_to'], input[id^='mailcwp_cc'], inp
   width: 100%;
   height: 32px;
 }
+
+.ui-dialog {
+  z-index:100000;
+}
