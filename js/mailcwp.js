@@ -303,6 +303,7 @@ function composeMessage(aMsgNumber, aMode) {
       display_notice("Unable to compose message: " + aTextStatus + "/" + aErrorThrown); 
     }, 
     success: function (aData) { 
+//console.log(aData);
       if (processAjaxResponse(aData)) {
         vData = jQuery.parseJSON(aData);
 //console.log(vData.upload_dir);
@@ -365,7 +366,7 @@ console.log(jQuery('#filelist_' + vUniqueId));
               vHtml += "</tbody></table>";
               jQuery("#filelist_" + vUniqueId).html(vHtml); 
 	       jQuery("input[id^=remove_" + vUniqueId + "_]").change(function(e, ui) {
-	console.log("doing this " + vUniqueId);
+	//console.log("doing this " + vUniqueId);
 		 if (jQuery("input[id^=remove_" + vUniqueId + "_]:checked").length > 0) {
 		   jQuery('#removefiles_' + vUniqueId).button("enable");
 		 } else {
@@ -641,6 +642,7 @@ function sendMessage(aMsgNumber, aUniqueId) {
       display_notice("Unable to compose message: " + aTextStatus + "/" + aErrorThrown); 
     }, 
     success: function (aData) { 
+//console.log(aData);
       if (processAjaxResponse(aData)) {
         jQuery("#mailcwp_sent_" + aUniqueId).val("SENT");
         jQuery("#mailcwp_compose_dialog_" + aUniqueId).dialog("close");
@@ -725,35 +727,22 @@ function getHeaders(aAllAccounts, aPage, aFolder, aAccount) {
         display_notice("Unable to fetch headers: " + aTextStatus + "/" + aErrorThrown); 
       }, 
       success: function (aHtml) { 
-        jQuery(document).trigger("mailcwp_message_selection_off");
-        mLastRefresh = new Date();
-        setLastUpdate();
-        jQuery("#progressbar").hide();
-        mPage = aPage;
-        jQuery("#mailcwp_headers").html(aHtml);
-        /*jQuery("#mailcwp_headers tbody").selectable({
-          selected: function(e, ui) {
-            vId = "#" + ui.selected.id;
-            if (vId.indexOf("#action-") == 0) {
-              jQuery(vId).prop("checked", true);
-            }
-            jQuery(document).trigger("mailcwp_message_selection_on");
-          },
-          unselected: function(e, ui) {
-            vId = "#" + ui.unselected.id;
-            if (vId.indexOf("#action-") == 0) {
-              jQuery(vId).prop("checked", false);
-            }
-            jQuery(document).trigger("mailcwp_message_selection_off");
-          }
-        });*/
-        jQuery(".mailcwp_answered span.ui-icon-arrowreturnthick-1-w").show();
-        if (mRefreshQueue.length > 0) {
-          vArgs = mRefreshQueue.splice(0, 1);
-          getHeaders(vArgs[0], vArgs[1], vArgs[2], vArgs[3]);
+        if (aHtml == "0") {
+          window.location = window.location.protocol + "//" + window.location.hostname + "/wp-login.php?redirect_to=" + window.location.href;
+        } else {
+	  jQuery(document).trigger("mailcwp_message_selection_off");
+	  mLastRefresh = new Date();
+	  setLastUpdate();
+	  jQuery("#progressbar").hide();
+	  mPage = aPage;
+	  jQuery("#mailcwp_headers").html(aHtml);
+	  jQuery(".mailcwp_answered span.ui-icon-arrowreturnthick-1-w").show();
+	  if (mRefreshQueue.length > 0) {
+	    vArgs = mRefreshQueue.splice(0, 1);
+	    getHeaders(vArgs[0], vArgs[1], vArgs[2], vArgs[3]);
+	  }
+	  mRefreshLock = false;
         }
-        mRefreshLock = false;
-        //jQuery(".ui-menu").menu("collapseAll", null, true);
       }
     });
   }
@@ -775,7 +764,7 @@ function getMessage(aFolderName, aMessageNumber, aSubject) {
         display_notice("Unable to fetch headers: " + aTextStatus + "/" + aErrorThrown); 
       }, 
       success: function (aData) { 
-        console.log(aData);
+        //console.log(aData);
         jQuery("#progressbar").hide();
         processAjaxResponse(aData);
       }

@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.91
+Version: 1.92
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.91);
+define ('MAILCWP_VERSION', 1.92);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -217,42 +217,64 @@ function mailcwp_account_edit_dialog($user_id, $account = null, $full_form = fal
   //'<form>' .
   '<input type="hidden" id="mailcwp_user_id" name="mailcwp_user_id" value="' . $user_id . '"/>' .
   '<input type="hidden" id="mailcwp_account_id" name="mailcwp_account_id" value="' . (isset($account) ? $account["id"] : "") . '"/>' .
-  '<fieldset>' .
+  '<table>' .
   $before_form .
-  '  <label for="mailcwp_name">Name</label>' .
-  '  <input type="text" name="mailcwp_name" id="mailcwp_name" value="' . (isset($account) ? $account["name"] : "") . '"><br/>' .
-  '  <label for="mailcwp_host">Host</label>' .
-  '  <input type="text" name="mailcwp_host" id="mailcwp_host" value="' . (isset($account) ? $account["host"] : "") . '"><br/>' .
-  '  <label for="mailcwp_port">Port</label>' .
-  '  <input type="text" name="mailcwp_port" id="mailcwp_port" value="' . (isset($account) ? $account["port"] : "") . '"><br/>' .
-  '  <label for="mailcwp_port">Use SSL</label>' .
-  '  <input type="checkbox" name="mailcwp_use_ssl" id="mailcwp_use_ssl" ' . (isset($account) && $account["use_ssl"] === "true" ? " checked" : "") . '><br/>' .
-  '  <label for="mailcwp_port">Validate Certificates</label>' .
-  '  <input type="checkbox" name="mailcwp_validate_cert" id="mailcwp_validate_cert" ' . (isset($account) && $account["validate_cert"] === "true" ? " checked" : "") . '><br/>' .
-  '  <label for="mailcwp_email">Email</label>' .
-  '  <input type="text" name="mailcwp_email" id="mailcwp_email" value="' . (isset($account["email"]) ? $account["email"] : "") . '"><br/>' .
-  '  <label for="mailcwp_username">Username</label>' .
-  '  <input type="text" name="mailcwp_username" id="mailcwp_username" value="' . (isset($account) ? $account["username"] : "") . '"><br/>';
+  '  <tr><td>Name</td>' .
+  '  <td><input type="text" name="mailcwp_name" id="mailcwp_name" value="' . (isset($account) ? $account["name"] : "") . '"></td></tr>' .
+  '  <tr><td>Host</td>' .
+  '  <td><input type="text" name="mailcwp_host" id="mailcwp_host" value="' . (isset($account) ? $account["host"] : "") . '"></td></tr>' .
+  '  <tr><td>Port</td>' .
+  '  <td><input type="text" name="mailcwp_port" id="mailcwp_port" value="' . (isset($account) ? $account["port"] : "") . '"></td></tr>' .
+  '  <tr><td>Use SSL</td>' .
+  '  <td><input type="checkbox" name="mailcwp_use_ssl" id="mailcwp_use_ssl" ' . (isset($account) && $account["use_ssl"] === "true" ? " checked" : "") . '></td></tr>' .
+  '  <tr><td>Validate Certificates</td>' .
+  '  <td><input type="checkbox" name="mailcwp_validate_cert" id="mailcwp_validate_cert" ' . (isset($account) && $account["validate_cert"] === "true" ? " checked" : "") . '></td</tr>' .
+  '  <tr><td>Email</td>' .
+  '  <td><input type="text" name="mailcwp_email" id="mailcwp_email" value="' . (isset($account["email"]) ? $account["email"] : "") . '"></td></tr>' .
+  '  <tr><td>Username</td>' .
+  '  <td><input type="text" name="mailcwp_username" id="mailcwp_username" value="' . (isset($account) ? $account["username"] : "") . '"></td></tr>';
   if ($store_passwords) {
-    $result .= '  <label for="mailcwp_password">Password</label>' .
-    '  <input type="password" name="mailcwp_password" id="mailcwp_password" value="' . (isset($account) ? $account["password"] : "") . '"><br/>' .
-    '  <label for="mailcwp_confirm_password">Confirm Password</label>' .
-    '  <input type="password" name="mailcwp_confirm_password" id="mailcwp_confirm_password" value="' . (isset($account) ? $account["password"] : "") . '"><br/>' .
-    '  <label for="mailcwp_port">Use start-TLS</label>' .
-    '  <input type="checkbox" name="mailcwp_use_tls" id="mailcwp_use_tls" ' . (isset($account) && $account["use_tls"] === "true" ? " checked" : "") . '><br/>';
+    $result .= '  <tr><td>Password</td>' .
+    '  <td><input type="password" name="mailcwp_password" id="mailcwp_password" value="' . (isset($account) ? $account["password"] : "") . '"></td></tr>' .
+    '  <tr><td>Confirm Password</td>' .
+    '  <td><input type="password" name="mailcwp_confirm_password" id="mailcwp_confirm_password" value="' . (isset($account) ? $account["password"] : "") . '"></td></tr>' .
+    '  <tr><td>Use start-TLS</td>' .
+    '  <td><input type="checkbox" name="mailcwp_use_tls" id="mailcwp_use_tls" ' . (isset($account) && $account["use_tls"] === "true" ? " checked" : "") . '></td></tr>';
+  }
+  $timezone_options = "";
+  $timezones = timezone_identifiers_list();
+  foreach ($timezones as $timezone) {
+    $timezone_options .= " <option " . (isset($account) && $account["timezone"] == $timezone ? "checked" : "") . ">$timezone</option>";
+  }
+  $result .= '  <tr><td>Timezone</td>' .
+  '  <td><select name="mailcwp_timezone" id="mailcwp_timezone">' .
+  $timezone_options .
+  '  </select></td></tr>' .
+  '  <tr><td>SMTP Host</td>' .
+  '  <td><input type="text" name="mailcwp_smtp_host" id="mailcwp_smtp_host" value="' . (isset($account) ? $account["smtp_host"] : "") . '"></td></tr>' .
+  '  <tr><td>SMTP Port</td>' .
+  '  <td><input type="text" name="mailcwp_smtp_port" id="mailcwp_smtp_port" value="' . (isset($account) ? $account["smtp_port"] : "") . '"></td></tr>' .
+  '  <tr><td>SMTP server requires authenatication</td>' .
+  '  <td><input type="checkbox" name="mailcwp_smtp_auth" id="mailcwp_smtp_auth" ' . (isset($account) && $account["smtp_auth"] === "true" ? " checked" : "") . '></td></tr>' .
+  '  <tr><td>SMTP Username</td>' .
+  '  <td><input type="text" name="mailcwp_smtp_username" id="mailcwp_smtp_username" value="' . (isset($account) ? $account["smtp_username"] : "") . '"></td></tr>';
+  if ($store_passwords) {
+    $result .= '  <tr><td>SMTP Password</td>' .
+    '  <td><input type="password" name="mailcwp_smtp_password" id="mailcwp_smtp_password" value="' . (isset($account) ? $account["smtp_password"] : "") . '"></td></tr>';
   }
   if (isset($account) && $full_form) {
-    $result .= '  <label for="mailcwp_sent_folder">Sent Folder</label>' .
+    $result .= '  <tr><td>Sent Folder</td><td>' .
     $send_select .
-    '  <label for="mailcwp_tash_folder">Trash Folder</label>' .
+    '  </td></tr><tr><td>Trash Folder</td><td>' .
     $trash_select .
-    '  <label for="mailcwp_draft_folder">Draft  Folder</label>' .
+    '  </td></tr><tr><td>Draft  Folder</td><td>' .
     $draft_select;
   }
+  $result .= '</td></tr><tr><td colspan="2">';
   $result .= $after_form;
-  $result .= '</fieldset>' .
-  '<input type="button" class="button button-primary" name="Test" value="Test" id="account-edit-test"/>&nbsp;<input type="button" class="button button-primary" name="Save" value="Save" id="account-edit-save" onclick="submitAccountEditForm(); return false;"/>&nbsp;<input type="button" class="button button-primary" name="Cancel" value="Cancel" id="account-edit-cancel" onclick="jQuery(\'#account-edit-form\').hide(); jQuery(\'#account-profile-table\').show();"/>' .
+  $result .= '</td></tr><tr><td colspan="2"><input type="button" class="button button-primary" name="Test" value="Test" id="account-edit-test"/>&nbsp;<input type="button" class="button button-primary" name="Save" value="Save" id="account-edit-save" onclick="submitAccountEditForm(); return false;"/>&nbsp;<input type="button" class="button button-primary" name="Cancel" value="Cancel" id="account-edit-cancel" onclick="jQuery(\'#account-edit-form\').hide(); jQuery(\'#account-profile-table\').show();"/></td></tr>' .
   //'</form>' .
+  '</table>' .
   '</div>';
   return $result;
 }
@@ -323,6 +345,17 @@ function mailcwp_account_options_content($text) {
   $text .= "    <span>Username: <input type=\"text\" name=\"mailcwp_account_username\" id=\"mailcwp_account_username\"/></span>";
   $text .= "    <span>Password: <input type=\"password\" name=\"mailcwp_account_password\" id=\"mailcwp_account_password\"/></span>";
   $text .= "    <span style=\"$style\">Use start-TLS: <input type=\"checkbox\" name=\"mailcwp_account_use_tls\" id=\"mailcwp_account_use_tls\"/></span></p>";
+  $text .= "    <span style=\"$style\">Timezone <select name=\"mailcwp_account_timezone\" id=\"mailcwp_account_timezone\">";
+  $timezones = timezone_identifiers_list();
+  foreach ($timezones as $timezone) {
+    $text .= " <option>$timezone</option>";
+  }
+  $text .= "</select></span>";
+  $text .= "    <span style=\"$style\">SMTP Host: <input type=\"text\" name=\"mailcwp_account_smtp_host\" id=\"mailcwp_account_smtp_host\"/></span>";
+  $text .= "    <span style=\"$style\">SMTP Port: <input type=\"text\" name=\"mailcwp_account_smtp_port\" id=\"mailcwp_account_smtp_port\"/></span>";
+  $text .= "    <span style=\"$style\">SMTP server requires authentication: <input type=\"checkbox\" name=\"mailcwp_account_smtp_auth\" id=\"mailcwp_account_smtp_auth\"/></span></p>";
+  $text .= "    <span>SMTP Username: <input type=\"text\" name=\"mailcwp_account_smtp_username\" id=\"mailcwp_account_smtp_username\"/></span>";
+  $text .= "    <span>SMTP Password: <input type=\"password\" name=\"mailcwp_account_smtp_password\" id=\"mailcwp_account_smtp_password\"/></span>";
   $text .= "  </div>";
   $text .= "</div>";
 
@@ -413,6 +446,12 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        mailcwp_username: jQuery(\"#mailcwp_account_username\").val(),";
   $text .= "        mailcwp_password: jQuery(\"#mailcwp_account_password\").val(),";
   $text .= "        mailcwp_use_tls: jQuery(\"#mailcwp_account_use_tls\").prop(\"checked\"),";
+  $text .= "        mailcwp_timezone: jQuery(\"#mailcwp_account_timezone\").val(),";
+  $text .= "        mailcwp_smtp_host: jQuery(\"#mailcwp_account_smtp_host\").val(),";
+  $text .= "        mailcwp_smtp_port: jQuery(\"#mailcwp_account_smtp_port\").val(),";
+  $text .= "        mailcwp_smtp_username: jQuery(\"#mailcwp_account_smtp_username\").val(),";
+  $text .= "        mailcwp_smtp_password: jQuery(\"#mailcwp_account_smtp_password\").val(),";
+  $text .= "        mailcwp_smtp_auth: jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\"),";
   $text .= "      },";
   $text .= "      success: function(aData) {";
   //$text .= "         jQuery(\"#remove_account_dialog_\" + aAccountId).dialog(\"close\");";
@@ -480,6 +519,12 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        jQuery(\"#mailcwp_account_username\").val(vData.account.username);";
   $text .= "        jQuery(\"#mailcwp_account_password\").val(vData.account.password);";
   $text .= "        jQuery(\"#mailcwp_account_use_tls\").prop(\"checked\", vData.account.use_tls === \"true\");";
+  $text .= "        jQuery(\"#mailcwp_account_timezone\").val(vData.account.timezone),";
+  $text .= "        jQuery(\"#mailcwp_account_smtp_host\").val(vData.account.smtp_host),";
+  $text .= "        jQuery(\"#mailcwp_account_smtp_port\").val(vData.account.smtp_port),";
+  $text .= "        jQuery(\"#mailcwp_account_smtp_username\").val(vData.account.smtp_username),";
+  $text .= "        jQuery(\"#mailcwp_account_smtp_password\").val(vData.account.smtp_password),";
+  $text .= "        jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\", vData.account.smtp_auth === \"true\"),";
   //$text .= "        jQuery(\"#mailcwp_account_test\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_save\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_remove\").button(\"enable\");";
@@ -595,6 +640,7 @@ function mailcwp_admin_settings() {
     $imap_read_timeout = $_POST["imap_read_timeout"];
     $imap_write_timeout = $_POST["imap_write_timeout"];
     $imap_close_timeout = $_POST["imap_close_timeout"];
+    $smtp_connect_timeout = $_POST["smtp_connect_timeout"];
     $auto_refresh = isset($_POST["auto_refresh"]);
     $refresh_interval = $_POST["refresh_interval"];
 
@@ -609,6 +655,7 @@ function mailcwp_admin_settings() {
     $options["imap_read_timeout"] = $imap_read_timeout;
     $options["imap_write_timeout"] = $imap_write_timeout;
     $options["imap_close_timeout"] = $imap_close_timeout;
+    $options["smtp_connect_timeout"] = $smtp_connect_timeout;
     $options["refresh_interval"] = $refresh_interval;
     $options["auto_refresh"] = $auto_refresh;
 
@@ -625,6 +672,7 @@ function mailcwp_admin_settings() {
     $imap_read_timeout = isset($options["imap_read_timeout"]) ? $options["imap_read_timeout"] : 15;
     $imap_write_timeout = isset($options["imap_write_timeout"]) ? $options["imap_write_timeout"] : 15;
     $imap_close_timeout = isset($options["imap_close_timeout"]) ? $options["imap_close_timeout"] : 15;
+    $smtp_connect_timeout = isset($options["smtp_connect_timeout"]) ? $options["smtp_connect_timeout"] : 10;
     $auto_refresh = isset($options["auto_refresh"]) ? $options["auto_refresh"] : false;
     $refresh_interval = isset($options["refresh_interval"]) ? $options["refresh_interval"] : 10;
     $hide_admin_bar = isset($options["hide_admin_bar"]) ? $options["hide_admin_bar"] : true;
@@ -683,6 +731,9 @@ function mailcwp_admin_settings() {
   echo "  " . __("Read") . ": <input type=\"text\" size=\"3\" name=\"imap_read_timeout\" value=\"$imap_read_timeout\">&nbsp;sec<br/>";
   echo "  " . __("Write") . ": <input type=\"text\" size=\"3\" name=\"imap_write_timeout\" value=\"$imap_write_timeout\">&nbsp;sec<br/>";
   echo "  " . __("Close") . ": <input type=\"text\" size=\"3\" name=\"imap_close_timeout\" value=\"$imap_close_timeout\">&nbsp;sec<br/></p>";
+
+  echo "  <p><h3>SMTP " . __("Timeouts") . "</h3>";
+  echo "  " . __("Connect") . ": <input type=\"text\" size=\"3\" name=\"smtp_connect_timeout\" value=\"$smtp_connect_timeout\">&nbsp;sec<br/></p>";
 
   echo "  <p><h3>" . __("Refresh") . "</h3>";
   echo "  " . __("Auto Refresh") . ": <input type=\"checkbox\" name=\"auto_refresh\"" . ($auto_refresh ? " checked" : "") . ">&nbsp;&nbsp;";
@@ -893,6 +944,9 @@ function mailcwp_edit_account_callback () {
     if (isset($_POST["mailcwp_validate_cert"])) {
       $data["validate_cert"] = $_POST["mailcwp_validate_cert"];
     }
+    if (isset($_POST["mailcwp_timezone"])) {
+      $data["timezone"] = $_POST["mailcwp_timezone"];
+    }
     if (isset($_POST["mailcwp_email"])) {
       $data["email"] = $_POST["mailcwp_email"];
     }
@@ -901,6 +955,21 @@ function mailcwp_edit_account_callback () {
     }
     if (isset($_POST["mailcwp_use_tls"])) {
       $data["use_tls"] = $_POST["mailcwp_use_tls"];
+    }
+    if (isset($_POST["mailcwp_smtp_auth"])) {
+      $data["smtp_auth"] = $_POST["mailcwp_smtp_auth"];
+    }
+    if (isset($_POST["mailcwp_smtp_host"])) {
+      $data["smtp_host"] = $_POST["mailcwp_smtp_host"];
+    }
+    if (isset($_POST["mailcwp_smtp_port"])) {
+      $data["smtp_port"] = $_POST["mailcwp_smtp_port"];
+    }
+    if (isset($_POST["mailcwp_smtp_username"])) {
+      $data["smtp_username"] = $_POST["mailcwp_smtp_username"];
+    }
+    if (isset($_POST["mailcwp_smtp_password"])) {
+      $data["smtp_password"] = $_POST["mailcwp_smtp_password"];
     }
     if (isset($_POST["mailcwp_sent_folder"])) {
       $data["sent_folder"] = $_POST["mailcwp_sent_folder"];
@@ -1125,7 +1194,7 @@ function mailcwp_get_headers_callback () {
 //write_log("MAILCWP SESSION: ". print_r($mailcwp_session, true));
   
   if (!is_user_logged_in()) {
-     echo __("Please <a href=\"wp-login.php\">login</a> to WordPress to access your email.");
+     echo "NOT LOGGED IN";
      die();
   }
 
@@ -1663,8 +1732,19 @@ function mailcwp_compose_callback () {
     }
 
     $from = "$account[name] <$account[email]>";
-    $original_date = date("D j F Y", mailcwp_get_imap_decoded_string($headers->udate));
-    $original_time = date("g:ia", mailcwp_get_imap_decoded_string($headers->udate));
+    $tz_name = $account["timezone"];
+    $timezone = null;
+    if (!empty($tz_name)) {
+      $timezone = new DateTimeZone($tz_name);
+    }
+
+    $original_datetime = new DateTime();
+    $original_datetime->setTimestamp(mailcwp_get_imap_decoded_string($headers->udate));
+    if (isset($timezone)) {
+      $original_datetime->setTimeZone($timezone);
+    }
+    $original_date = $original_datetime->format("D j F Y");//date("D j F Y", mailcwp_get_imap_decoded_string($headers->udate));
+    $original_time = $original_datetime->format("g:ia"); //date("g:ia", mailcwp_get_imap_decoded_string($headers->udate));
     $original_from = mailcwp_get_imap_decoded_string($headers->fromaddress);
     $original_to = isset($headers->toaddress)  ? mailcwp_get_imap_decoded_string($headers->toaddress) : "";
 //write_log($mode);
@@ -1850,7 +1930,7 @@ function mailcwp_compose_callback () {
   die();
 }
 
-function create_message(&$headers, &$message, $for_draft = false) {
+function create_message(&$headers, &$message, &$attachments, $for_draft = false, $via_smtp = false) {
   $to = str_replace(";", ",", $_POST["to"]);
   $cc = str_replace(";", ",", $_POST["cc"]);
   $bcc = str_replace(";", ",", $_POST["bcc"]);
@@ -1884,11 +1964,22 @@ function create_message(&$headers, &$message, $for_draft = false) {
   } else {
     $forward_attachments = array();
   }
-  $now = date("D, d-M-Y H:i:s O"); 
+
+  $tz_name = $account["timezone"];
+  $timezone = null;
+  if (!empty($tz_name)) {
+    $timezone = new DateTimeZone($tz_name);
+  }
+
+  $now = new DateTime();
+  if (isset($timezone)) {
+    $now->setTimeZone($timezone);
+  }
+  
   $headers = "From: $from\r\n" .
-             "Date: $now\r\n" . 
+             "Date: " . $now->format("D, d-M-Y H:i:s O") . "\r\n" . 
              "Reply-To: $from\r\n".
-             "X-Mailer: MailCWP i" . MAILCWP_VERSION . "\r\n";
+             "X-Mailer: MailCWP " . MAILCWP_VERSION . "\r\n";
   if ($for_draft) {
     $headers .= "To: $to\r\n" .
                 "Subject: $subject\r\n";
@@ -1921,55 +2012,66 @@ function create_message(&$headers, &$message, $for_draft = false) {
   $upload_dir = wp_upload_dir();
   $mailcwp_upload_dir = "$upload_dir[basedir]/mailcwp/uploads"; 
   $uploaded_files = glob("$mailcwp_upload_dir/$unique_id-*");
-  if (is_array($uploaded_files) && count($uploaded_files) > 0 || !empty($forward_attachments)) {
-    $part2["type"] = TYPETEXT;
-    $part2["subtype"] = "html";
-    $part2["contents.data"] = $message;
-
-    $boundary = "------=".md5(uniqid(rand()));
-    $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
-    $message = "\r\n\r\n--$boundary\r\nContent-Type: text/html; charset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);
-    //process attachments
-    //find files
-    //if files found, read each one and generate attachment string
-    if (is_array($uploaded_files)) {
-      foreach ($uploaded_files as $uploaded_file) {
-	$basename = substr(basename($uploaded_file), strlen($unique_id) + 1);
-	$message .= "\r\n\r\n";
-	$message .= "--$boundary\r\n";
-	$message .= "Content-Transfer-Encoding: base64\r\n";
-	$message .= "Content-Disposition: attachment; filename=\"$basename\"\r\n"; 
-	$message .= "\r\n" . chunk_split(base64_encode(file_get_contents($uploaded_file))) . "\r\n";
-	unlink($uploaded_file);
+  if ($via_smtp) {
+      $attachments = array();
+      if (is_array($uploaded_files)) {
+	foreach ($uploaded_files as $uploaded_file) {
+          $attachments[] = $uploaded_file;
+        }
       }
-    }
-    if (!empty($forward_attachments)) {
-      foreach ($forward_attachments as $forward_filename => $forward_data) {
-	$message .= "\r\n\r\n";
-	$message .= "--$boundary\r\n";
-	$message .= "Content-Transfer-Encoding: base64\r\n";
-	$message .= "Content-Disposition: attachment; filename=\"$forward_filename\"\r\n"; 
-	$message .= "\r\n" . chunk_split(base64_encode($forward_data)) . "\r\n";
-      }
-    }
-    $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
   } else {
-    $boundary = "------=".md5(uniqid(rand()));
-    $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
-    $message = "\r\n\r\n--$boundary\r\nContent-Type: text/plain;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($plain_text_message) . "\r\n\r\n--$boundary\r\nContent-Type: text/html;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);;
-    $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
+    if (is_array($uploaded_files) && count($uploaded_files) > 0 || !empty($forward_attachments)) {
+      $part2["type"] = TYPETEXT;
+      $part2["subtype"] = "html";
+      $part2["contents.data"] = $message;
+
+      $boundary = "------=".md5(uniqid(rand()));
+      $headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
+      $message = "\r\n\r\n--$boundary\r\nContent-Type: text/html; charset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);
+      //process attachments
+      //find files
+      //if files found, read each one and generate attachment string
+      if (is_array($uploaded_files)) {
+	foreach ($uploaded_files as $uploaded_file) {
+	  $basename = substr(basename($uploaded_file), strlen($unique_id) + 1);
+	  $message .= "\r\n\r\n";
+	  $message .= "--$boundary\r\n";
+	  $message .= "Content-Transfer-Encoding: base64\r\n";
+	  $message .= "Content-Disposition: attachment; filename=\"$basename\"\r\n"; 
+	  $message .= "\r\n" . chunk_split(base64_encode(file_get_contents($uploaded_file))) . "\r\n";
+	  unlink($uploaded_file);
+	}
+      }
+      if (!empty($forward_attachments)) {
+	foreach ($forward_attachments as $forward_filename => $forward_data) {
+	  $message .= "\r\n\r\n";
+	  $message .= "--$boundary\r\n";
+	  $message .= "Content-Transfer-Encoding: base64\r\n";
+	  $message .= "Content-Disposition: attachment; filename=\"$forward_filename\"\r\n"; 
+	  $message .= "\r\n" . chunk_split(base64_encode($forward_data)) . "\r\n";
+	}
+      }
+      $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
+    } else {
+      $boundary = "------=".md5(uniqid(rand()));
+      $headers .= "Content-Type: multipart/alternative; boundary=\"$boundary\"\r\n";
+      $message = "\r\n\r\n--$boundary\r\nContent-Type: text/plain;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($plain_text_message) . "\r\n\r\n--$boundary\r\nContent-Type: text/html;\r\n\tcharset=\"ISO-8859-1\"\r\nContent-Transfer-Encoding: 8bit \r\n\r\n\r\n" . stripslashes($message);;
+      $message .= "\r\n\r\n\r\n--$boundary--\r\n\r\n";
+    }
   }
   return true;
 }
 
 function mailcwp_save_draft_callback () {
-  create_message($headers, $message, true);
+  create_message($headers, $message, $attachments, true);
+
   $mailcwp_session = mailcwp_get_session();
   if (!isset($mailcwp_session) || empty($mailcwp_session)) {
     return;
   }
 
   $account = $mailcwp_session["account"];
+
   $mbox_name = "$account[host]:$account[port]";
   $username = $account["username"];
   $password = $account["password"];
@@ -1983,6 +2085,7 @@ function mailcwp_save_draft_callback () {
 
   $draft_id = $_POST["draft_id"];
   $draft_folder = "";
+  $result = array();
   if (is_array($account)) {
     //keep copy in sent folder
     $draft_folder = $account["draft_folder"];
@@ -2093,8 +2196,14 @@ function mailcwp_send_callback () {
     $result["result"] = "Failed";
     $result["message"] = "Please enter a subject before sending the mail.";
   } else {
-    create_message($headers, $message);
-
+    $mailcwp_session = mailcwp_get_session();
+    $account = $mailcwp_session["account"];
+    if (array_key_exists("smtp_host", $account)) {
+      $smtp_host = $account["smtp_host"];
+    } else {
+      $smtp_host = '';
+    }
+    create_message($headers, $message, $attachments, false, !empty($smtp_host));
     if (empty($message)) {
       $result["result"] = "Failed";
       $result["message"] = "Please enter a message before sending the mail.";
@@ -2103,13 +2212,97 @@ function mailcwp_send_callback () {
 //write_log($headers);
       $to = stripslashes($to);
       $subject = stripslashes($subject);
-      if (mail($to, $subject, $message, $headers)) {
+
+      //check for smtp settings
+      //$mailcwp_session = mailcwp_get_session();
+      $account = $mailcwp_session["account"];
+      if (array_key_exists("smtp_host", $account)) {
+	$smtp_host = $account["smtp_host"];
+	$smtp_port = $account["smtp_port"];
+	$smtp_auth = $account["smtp_auth"];
+	$smtp_username = $account["smtp_username"];
+	$smtp_password = $account["smtp_password"];
+      }
+
+      //if smtp host is set use PHPMailer to sent mail via SMTP
+      if (!empty($smtp_host)) {
+        require_once("lib/class.phpmailer.php");
+        require_once("lib/class.smtp.php");
+
+        $options = get_option("mailcwp_settings", array());
+
+	$mailer             = new PHPMailer();
+        if (isset($options["smtp_connect_timeout"])) {
+          $mailer->Timeout = intval($options["smtp_connect_timeout"]);
+        } else {
+          $mailer->Timeout = 10;
+        }
+	$mailer->IsSMTP();
+	$mailer->SMTPAuth   = $smtp_auth;
+	$mailer->Host       = $smtp_host;
+        if (!empty($smtp_port)) {
+  	  $mailer->Port       = $smtp_port;
+        }
+        if ($smtp_auth) {
+  	  $mailer->Username   = $smtp_username;
+	  $mailer->Password   = $smtp_password;
+        }
+	$mailer->SetFrom($account['email'], $account['name']);
+	$mailer->AddReplyTo($account['email'], $account['name']);
+	$mailer->Subject    = $subject;
+	$mailer->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
+	$mailer->MsgHTML($message);
+        
+        $to_items = explode(",", $to);
+        foreach($to_items as $to_item) {
+	  if (($start_address = strpos($to_item, '<')) !== FALSE) {
+	    $end_address = strpos($to_item, '>');
+	    $name = substr($to_item, 0, $start_address - 1);
+	    $to_item = substr($to_item, $start_address + 1, $end_address - $start_address - 1);
+	    $mailer->AddAddress($to_item, $name);
+	  } else {
+	    $mailer->AddAddress($to_item);
+	  }
+        }
+
+        $cc_items = explode(",", $cc);
+        foreach($cc_items as $cc_item) {
+	  if (($start_address = strpos($cc_item, '<')) !== FALSE) {
+	    $end_address = strpos($cc_item, '>');
+	    $name = substr($cc_item, 0, $start_address - 1);
+	    $cc_item = substr($cc_item, $start_address + 1, $end_address - $start_address - 1);
+	    $mailer->AddCC($cc_item, $name);
+	  } else {
+	    $mailer->AddCC($cc_item);
+	  }
+        }
+
+        $bcc_items = explode(",", $bcc);
+        foreach($bcc_items as $bcc_item) {
+	  if (($start_address = strpos($bcc_item, '<')) !== FALSE) {
+	    $end_address = strpos($bcc_item, '>');
+	    $name = substr($bcc_item, 0, $start_address - 1);
+	    $bcc_item = substr($bcc_item, $start_address + 1, $end_address - $start_address - 1);
+	    $mailer->AddBCC($bcc_item, $name);
+	  } else {
+	    $mailer->AddBCC($bcc_item);
+	  }
+        }
+
+        foreach ($attachments as $attachment) {
+          $mailer->AddAttachment($attachment);
+        }
+	$mail_sent = $mailer->Send();
+      } else {
+        $mail_sent = mail($to, $subject, $message, $headers);
+      }
+      if ($mail_sent) {
         $headers .= "To: $to\r\n" .
                     "Subject: $subject\r\n";
         $mailcwp_session = mailcwp_get_session();
         $account = $mailcwp_session["account"];
 
-	$account = $mailcwp_session["account"];
+	//$account = $mailcwp_session["account"];
 	$from = "$account[name] <$account[email]>";
 	$mbox_name = "$account[host]:$account[port]";
 	$use_ssl = $account["use_ssl"];
@@ -2375,7 +2568,8 @@ function mailcwp_handler ($atts, $content, $tag) {
 
   if (!is_user_logged_in()) {
     //wp_die(__("Please login to view this page."));
-    wp_redirect(wp_login_url("$_SERVER[PHP_SELF]"));
+    //wp_redirect(wp_login_url("$_SERVER[PHP_SELF]"));
+    echo "<p>Please login to view this page.</p><p>You will be redirected in a moment. If you are not redirected click <a href=\"#\" onclick=\"window.location = '" . wp_login_url() . "?redirect_to=' + window.location.href;\">here</a>.<script type=\"text/javascript\">window.location = '" . wp_login_url() . "?redirect_to=' + window.location.href;</script>";
     exit;
   }
 

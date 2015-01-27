@@ -164,6 +164,10 @@ input[type="text"] {
   overflow: hidden;
 }
 
+.ui-accordion-header {
+  font-size:16px;
+}
+
 .ui-menu {
   z-index: 100;
 }

@@ -72,6 +72,12 @@ jQuery(document).ready(function() {
 	mailcwp_username: jQuery("#mailcwp_username").val(),
 	mailcwp_password: jQuery("#mailcwp_password").val(),
 	mailcwp_use_tls: jQuery("#mailcwp_use_tls").prop("checked"),
+        mailcwp_timezone: jQuery("#mailcwp_timezone").val(),
+	mailcwp_smtp_host: jQuery("#mailcwp_smtp_host").val(),
+	mailcwp_smtp_port: jQuery("#mailcwp_smtp_port").val(),
+	mailcwp_smtp_username: jQuery("#mailcwp_smtp_username").val(),
+	mailcwp_smtp_password: jQuery("#mailcwp_smtp_password").val(),
+	mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
       },
       success: function(aData) {
         vData = jQuery.parseJSON(aData);
@@ -106,6 +112,12 @@ jQuery(document).ready(function() {
         mailcwp_username: jQuery("#mailcwp_username").val(),
         mailcwp_password: jQuery("#mailcwp_password").val(),
         mailcwp_use_tls: jQuery("#mailcwp_use_tls").prop("checked"),
+        mailcwp_timezone: jQuery("#mailcwp_timezone").val(),
+	mailcwp_smtp_host: jQuery("#mailcwp_smtp_host").val(),
+	mailcwp_smtp_port: jQuery("#mailcwp_smtp_port").val(),
+	mailcwp_smtp_sername: jQuery("#mailcwp_smtp_username").val(),
+	mailcwp_smtp_password: jQuery("#mailcwp_smtp_password").val(),
+	mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
       },
       success: function(aData) {
         try {
@@ -189,6 +201,12 @@ function submitAccountEditForm() {
       mailcwp_username: jQuery("#mailcwp_username").val(),
       mailcwp_password: jQuery("#mailcwp_password").val(),
       mailcwp_use_tls: jQuery("#mailcwp_use_tls").prop("checked"),
+      mailcwp_timezone: jQuery("#mailcwp_timezone").val(),
+      mailcwp_smtp_host: jQuery("#mailcwp_smtp_host").val(),
+      mailcwp_smtp_port: jQuery("#mailcwp_smtp_port").val(),
+      mailcwp_smtp_sername: jQuery("#mailcwp_smtp_username").val(),
+      mailcwp_smtp_password: jQuery("#mailcwp_smtp_password").val(),
+      mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
     },
     success: function(aData) {
       processAjaxResponse(aData);
@@ -212,6 +230,12 @@ function displayAccount($account, $user_id) {
   jQuery("#mailcwp_password").val($account == null ? "" : $account.password);
   jQuery("#mailcwp_confirm_password").val($account == null ? "" : $account.password);
   jQuery("#mailcwp_use_tls").prop("checked", $account == null ? false : $account.use_tls === "true");
+  jQuery("#mailcwp_timezone").val($account == null ? "" : $account.timezone);
+  jQuery("#mailcwp_smtp_host").val($account == null ? "" : $account.smtp_host);
+  jQuery("#mailcwp_smtp_port").val($account == null ? "" : $account.smtp_port);
+  jQuery("#mailcwp_smtp_username").val($account == null ? "" : $account.smtp_username);
+  jQuery("#mailcwp_smtp_password").val($account == null ? "" : $account.smtp_password);
+  jQuery("#mailcwp_smtp_auth").prop("checked", $account == null ? false : $account.smtp_auth === "true");
   jQuery("#account-profile-table").hide();
   jQuery("#account-edit-form").show();
 }
