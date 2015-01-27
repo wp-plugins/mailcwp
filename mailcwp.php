@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.92
+Version: 1.93
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.92);
+define ('MAILCWP_VERSION', 1.93);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -1732,10 +1732,13 @@ function mailcwp_compose_callback () {
     }
 
     $from = "$account[name] <$account[email]>";
-    $tz_name = $account["timezone"];
     $timezone = null;
-    if (!empty($tz_name)) {
-      $timezone = new DateTimeZone($tz_name);
+
+    if (array_key_exists("timezone", $account)) {
+      $tz_name = $account["timezone"];
+      if (!empty($tz_name)) {
+        $timezone = new DateTimeZone($tz_name);
+      }
     }
 
     $original_datetime = new DateTime();
@@ -1965,10 +1968,12 @@ function create_message(&$headers, &$message, &$attachments, $for_draft = false,
     $forward_attachments = array();
   }
 
-  $tz_name = $account["timezone"];
   $timezone = null;
-  if (!empty($tz_name)) {
-    $timezone = new DateTimeZone($tz_name);
+  if (array_key_exists("timezone", $account)) {
+    $tz_name = $account["timezone"];
+    if (!empty($tz_name)) {
+      $timezone = new DateTimeZone($tz_name);
+    }
   }
 
   $now = new DateTime();
