@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 4.1
-Stable tag: 1.93
+Stable tag: 1.94
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -52,6 +52,9 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.94 =
+Fix for error when sending a message from an account with no configured Sent folder
+
 = 1.93 =
 Fix for account with no timezone set causing compose to fail
 
@@ -95,6 +98,9 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.94 =
+Fix for error when sending a message from an account with no configured Sent folder
 
 = 1.93 =
 Fix for account with no timezone set causing compose to fail

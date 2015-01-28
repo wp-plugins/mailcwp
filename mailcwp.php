@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.93
+Version: 1.94
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.93);
+define ('MAILCWP_VERSION', 1.94);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -262,6 +262,7 @@ function mailcwp_account_edit_dialog($user_id, $account = null, $full_form = fal
     $result .= '  <tr><td>SMTP Password</td>' .
     '  <td><input type="password" name="mailcwp_smtp_password" id="mailcwp_smtp_password" value="' . (isset($account) ? $account["smtp_password"] : "") . '"></td></tr>';
   }
+  $result .= '  <tr><td>Sound alert when new mail arrives</td><td><input type="checkbox" name="mailcwp_alert_sound" id="mailcwp_alert_sound" ' . (isset($account) && $account["alert_sound"] === "true" ? " checked" : "") . '></td></tr>';
   if (isset($account) && $full_form) {
     $result .= '  <tr><td>Sent Folder</td><td>' .
     $send_select .
@@ -356,6 +357,7 @@ function mailcwp_account_options_content($text) {
   $text .= "    <span style=\"$style\">SMTP server requires authentication: <input type=\"checkbox\" name=\"mailcwp_account_smtp_auth\" id=\"mailcwp_account_smtp_auth\"/></span></p>";
   $text .= "    <span>SMTP Username: <input type=\"text\" name=\"mailcwp_account_smtp_username\" id=\"mailcwp_account_smtp_username\"/></span>";
   $text .= "    <span>SMTP Password: <input type=\"password\" name=\"mailcwp_account_smtp_password\" id=\"mailcwp_account_smtp_password\"/></span>";
+  $text .= "    <span style=\"$style\">Sound alert when new mail arrives: <input type=\"checkbox\" name=\"mailcwp_account_alert_sound\" id=\"mailcwp_account_alert_sound\"/></span></p>";
   $text .= "  </div>";
   $text .= "</div>";
 
@@ -452,6 +454,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        mailcwp_smtp_username: jQuery(\"#mailcwp_account_smtp_username\").val(),";
   $text .= "        mailcwp_smtp_password: jQuery(\"#mailcwp_account_smtp_password\").val(),";
   $text .= "        mailcwp_smtp_auth: jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\"),";
+  $text .= "        mailcwp_alert_sound: jQuery(\"#mailcwp_account_alert_sound\").prop(\"checked\"),";
   $text .= "      },";
   $text .= "      success: function(aData) {";
   //$text .= "         jQuery(\"#remove_account_dialog_\" + aAccountId).dialog(\"close\");";
@@ -525,6 +528,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        jQuery(\"#mailcwp_account_smtp_username\").val(vData.account.smtp_username),";
   $text .= "        jQuery(\"#mailcwp_account_smtp_password\").val(vData.account.smtp_password),";
   $text .= "        jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\", vData.account.smtp_auth === \"true\"),";
+  $text .= "        jQuery(\"#mailcwp_account_alert_sound\").prop(\"checked\", vData.account.alert_sound === \"true\"),";
   //$text .= "        jQuery(\"#mailcwp_account_test\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_save\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_remove\").button(\"enable\");";
@@ -971,6 +975,9 @@ function mailcwp_edit_account_callback () {
     if (isset($_POST["mailcwp_smtp_password"])) {
       $data["smtp_password"] = $_POST["mailcwp_smtp_password"];
     }
+    if (isset($_POST["mailcwp_alert_sound"])) {
+      $data["alert_sound"] = $_POST["mailcwp_alert_sound"];
+    }
     if (isset($_POST["mailcwp_sent_folder"])) {
       $data["sent_folder"] = $_POST["mailcwp_sent_folder"];
     }
@@ -1160,6 +1167,7 @@ function mailcwp_get_unseen_messages($aAccount = null) {
   $accounts = get_user_meta($current_user->ID, "mailcwp_accounts", true);
 
   if (is_array($accounts)) {
+    $mustDing = false;
     echo "<script type=\"text/javascript\">";
     echo "  jQuery(document).ready(function() {";
     foreach ($accounts as $account) {
@@ -1174,6 +1182,7 @@ function mailcwp_get_unseen_messages($aAccount = null) {
 	    $unseen = imap_search($mbox, "UNSEEN");
 	    if (is_array($unseen) && count($unseen) > 0) {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name] (" . count($unseen) . ")\");";
+              $mustDing = $mustDing || (isset($account["alert_sound"]) && $account["alert_sound"]);
 	    } else {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name]\");";
 	    }
@@ -1181,6 +1190,9 @@ function mailcwp_get_unseen_messages($aAccount = null) {
           }
 	}
       }
+    }
+    if ($mustDing) {
+      echo "  playSound('" . plugins_url("sounds/ding.mp3", __FILE__) . "');";
     }
     echo "  });";
     echo "</script>";
@@ -2326,8 +2338,11 @@ function mailcwp_send_callback () {
 	$sent_folder = "";
 	if (is_array($account)) {
 	  //keep copy in sent folder
-	  $sent_folder = $account["sent_folder"];
-	  $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
+          $sent_folder = null;
+          if (array_key_exists("sent_folder", $account)) {
+  	    $sent_folder = $account["sent_folder"];
+          }
+          $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
 	  if (empty($sent_folder)) {
 	    $sent_folder = mailcwp_find_folder($mbox, $account, "Sent");
 	  }
@@ -2702,6 +2717,7 @@ function mailcwp_handler ($atts, $content, $tag) {
   <div id="mailcwp_prologue">
     <span><a href="http://cadreworks.com/mailcwp-plugin">MailCWP version <?php echo MAILCWP_VERSION ?> by CadreWorks Pty Ltd, 2014</a></span>
   </div>
+  <span id="dummy" style="height:0"></span>
   <script type="text/javascript">
     <?php if ($hide_admin_bar) { ?>
       jQuery(document).ready(function() {

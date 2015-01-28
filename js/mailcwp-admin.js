@@ -207,6 +207,7 @@ function submitAccountEditForm() {
       mailcwp_smtp_sername: jQuery("#mailcwp_smtp_username").val(),
       mailcwp_smtp_password: jQuery("#mailcwp_smtp_password").val(),
       mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
+      mailcwp_alert_sound: jQuery("#mailcwp_alert_sound").prop("checked")
     },
     success: function(aData) {
       processAjaxResponse(aData);
@@ -236,6 +237,7 @@ function displayAccount($account, $user_id) {
   jQuery("#mailcwp_smtp_username").val($account == null ? "" : $account.smtp_username);
   jQuery("#mailcwp_smtp_password").val($account == null ? "" : $account.smtp_password);
   jQuery("#mailcwp_smtp_auth").prop("checked", $account == null ? false : $account.smtp_auth === "true");
+  jQuery("#mailcwp_alert_sound").prop("checked", $account == null ? false : $account.alert_sound === "true");
   jQuery("#account-profile-table").hide();
   jQuery("#account-edit-form").show();
 }

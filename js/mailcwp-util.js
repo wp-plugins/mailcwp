@@ -290,3 +290,7 @@ function checkDialogSize(aId) {
     jQuery(vId).parent().css("left", "5px");
   }
 }
+
+function playSound(soundfile) {
+  jQuery("#dummy").html("<embed src=\""+soundfile+"\" hidden=\"true\" autostart=\"true\" loop=\"false\" style=\"height:0\"/>");
+}
