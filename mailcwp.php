@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.94
+Version: 1.95
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.94);
+define ('MAILCWP_VERSION', 1.95);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -1182,7 +1182,7 @@ function mailcwp_get_unseen_messages($aAccount = null) {
 	    $unseen = imap_search($mbox, "UNSEEN");
 	    if (is_array($unseen) && count($unseen) > 0) {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name] (" . count($unseen) . ")\");";
-              $mustDing = $mustDing || (isset($account["alert_sound"]) && $account["alert_sound"]);
+              $mustDing = empty($aAccount) && ($mustDing || (isset($account["alert_sound"]) && $account["alert_sound"]));
 	    } else {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name]\");";
 	    }
@@ -1312,29 +1312,23 @@ function mailcwp_get_headers_callback () {
   }
   if ($page < 6) {
     for ($i = 4; $i <= 6 && $i <= $num_page; $i++) {
-      $paging_toolbar .= "<a class=\"mailcwp_page_number\"" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
+      $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
     }
   } else {
-    if ($page > 4 && $page < $num_page - 3) {
+    if ($page > 4 && $page < $num_page - 4) {
       $paging_toolbar .= "&hellip;&nbsp;&nbsp";
       for ($i = $page - 1; $i <= $page + 1; $i++) {
         $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
       }
     }
   }
-  if ($num_page < $i + 6) {
-    for ($i = $i + 1; $i <= $num_page; $i++) {
+  if ($page >= $num_page - 4) {
+    $paging_toolbar .= "&hellip;&nbsp;&nbsp";
+    for ($i = $num_page - 5; $i <= $num_page; $i++) {
       $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
     }
   } else {
-    if ($page > $num_page - 6) {
-      for ($i = $num_page - 5; $i <= $num_page - 3; $i++) {
-        $paging_toolbar .= "&hellip;&nbsp;&nbsp";
-        $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
-      }
-    } else {
-      $paging_toolbar .= "&hellip;&nbsp;&nbsp";
-    }
+    $paging_toolbar .= "&hellip;&nbsp;&nbsp";
     for ($i = $num_page - 2; $i <= $num_page; $i++) {
       $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
     }
@@ -1702,11 +1696,14 @@ function mailcwp_compose_callback () {
     $mbox = mailcwp_imap_connect($account, 0, $folder);
     $mail_message = new MailMessage($mbox, $original);  
     $html_message = $mail_message->getHtmlMessage();
+//print_r($html_message);
     $char_set = $mail_message->getCharSet();
     if (!empty($char_set) && !empty($html_message)) {
       $html_message = iconv($char_set, "UTF-8", $html_message);
     }
     $plain_message = $mail_message->getPlainMessage();
+//print_r($plain_message);
+//exit;
     $attachments = $mail_message->getAttachments();
     $headers = $mail_message->getHeaders();
     imap_close($mbox);
@@ -1812,7 +1809,8 @@ function mailcwp_compose_callback () {
     } else {
       $message = $plain_message;
       if ($mode != COMPOSE_EDIT_DRAFT) {
-        $message = preg_replace("/(^|\\n)/", "\n> ", $message);
+        //$message = preg_replace("/(^|\\n)/", "\n> ", $message);
+        $message = preg_replace("/(^|\\n)/", "<br/>&gt; ", $message);
       }
       $message = "On $original_date, at $original_time, $original_from wrote:\n$message";
     }
@@ -1887,7 +1885,7 @@ function mailcwp_compose_callback () {
   }
   $compose_toolbar_html .= "  </div>";
 
-  $html .= apply_filters("mailcwp_compose_toolbar", $compose_toolbar_html);
+  $html .= apply_filters("mailcwp_compose_toolbar", $compose_toolbar_html, $message_id);
   $html .= "      <textarea id=\"mailcwp_message_$message_id\" name=\"mailcwp_message_$message_id\" cols=\"80\" rows=\"40\">";
   if ($mode != COMPOSE_EDIT_DRAFT) {
     $html .= apply_filters("mailcwp_compose_before_message", "", $account["id"]);
@@ -2105,7 +2103,10 @@ function mailcwp_save_draft_callback () {
   $result = array();
   if (is_array($account)) {
     //keep copy in sent folder
-    $draft_folder = $account["draft_folder"];
+    $draft_folder = null;
+    if (array_key_exists("draft_folder", $account)) {
+      $draft_folder = $account["draft_folder"];
+    }
     $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
     if (empty($draft_folder)) {
       $draft_folder = mailcwp_find_folder($mbox, $account, "Draft");
@@ -2268,7 +2269,7 @@ function mailcwp_send_callback () {
 	$mailer->AddReplyTo($account['email'], $account['name']);
 	$mailer->Subject    = $subject;
 	$mailer->AltBody    = "To view the message, please use an HTML compatible email viewer!"; // optional, comment out and test
-	$mailer->MsgHTML($message);
+	$mailer->MsgHTML(stripslashes($message));
         
         $to_items = explode(",", $to);
         foreach($to_items as $to_item) {
@@ -2715,7 +2716,7 @@ function mailcwp_handler ($atts, $content, $tag) {
     </div>
   </div>
   <div id="mailcwp_prologue">
-    <span><a href="http://cadreworks.com/mailcwp-plugin">MailCWP version <?php echo MAILCWP_VERSION ?> by CadreWorks Pty Ltd, 2014</a></span>
+    <span><a href="http://cadreworks.com/mailcwp-plugin">MailCWP version <?php echo MAILCWP_VERSION ?> by CadreWorks Pty Ltd, <?php echo date("Y") ?></a></span>
   </div>
   <span id="dummy" style="height:0"></span>
   <script type="text/javascript">

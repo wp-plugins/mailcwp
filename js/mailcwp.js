@@ -289,6 +289,7 @@ function removeAccount(aAccountId, aAccountName) {
 
 
 function composeMessage(aMsgNumber, aMode) {
+//console.log('compose message');
   vUniqueId = Math.floor((Math.random()*1000000)+1);
   jQuery.ajax({
     type: "POST",
@@ -351,8 +352,8 @@ function composeMessage(aMsgNumber, aMode) {
               jQuery("#filelist_" + vUniqueId).html("No attachments"); 
             },
             /*PostInit: function() {
-console.log("POSTINIT");
-console.log(jQuery('#filelist_' + vUniqueId));
+//console.log("POSTINIT");
+//console.log(jQuery('#filelist_' + vUniqueId));
               jQuery("#filelist_" + vUniqueId).html("No attachments"); 
             },*/
 
