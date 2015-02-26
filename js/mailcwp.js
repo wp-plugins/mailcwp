@@ -352,8 +352,8 @@ function composeMessage(aMsgNumber, aMode) {
               jQuery("#filelist_" + vUniqueId).html("No attachments"); 
             },
             /*PostInit: function() {
-//console.log("POSTINIT");
-//console.log(jQuery('#filelist_' + vUniqueId));
+console.log("POSTINIT");
+console.log(jQuery('#filelist_' + vUniqueId));
               jQuery("#filelist_" + vUniqueId).html("No attachments"); 
             },*/
 
@@ -765,7 +765,7 @@ function getMessage(aFolderName, aMessageNumber, aSubject) {
         display_notice("Unable to fetch headers: " + aTextStatus + "/" + aErrorThrown); 
       }, 
       success: function (aData) { 
-        //console.log(aData);
+//console.log(aData);
         jQuery("#progressbar").hide();
         processAjaxResponse(aData);
       }

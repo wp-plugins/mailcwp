@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 4.1
-Stable tag: 1.95
+Stable tag: 1.96
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,6 +23,14 @@ MailCWP is designed to be responsive and feature rich. Powered by jQuery and
 AJAX the system responds quickly to user requests. Using jQuery UI (with
 jui_theme_switch) it looks great. Attachments are managed using
 plUpload to quickly add file attachments with no need for page refreshes.
+
+Several add-ons are available to make MailCWP even more powerful.
+1. [MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book) – Manage all your email contacts.
+1. [MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search) – Find messages quickly.
+1. [MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer) – An advanced text editor.
+1. [MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders) – Manage email folders.
+1. [MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures) – Automatically add a signature to email messages.
+1. [MailCWP Macros](http://cadreworks.com/mailcwp-plugin/mailcwp-macros) – Quickly insert standard templates into email messages.
 
 See [MailCWP Plugin](http://cadreworks.com/mailcwp-plugin) for more information.
 
@@ -51,6 +59,12 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 3. The Options dialog. Add/Edit IMAP accounts and setup Sent, Trash and Drafts folders.
 
 == Changelog ==
+
+= 1.96 =
+Add localisation and translation files
+Fix for utf8 conversion issue when reading incoming mail
+Modify compose toolbar filter to support macros plugin
+Fix for pagination truncating header list 
 
 = 1.95 =
 Strip slashes from email body when sending via SMTP
@@ -103,6 +117,12 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.96 =
+Add localisation and translation files
+Fix for utf8 conversion issue when reading incoming mail
+Modify compose toolbar filter to support macros plugin
+Fix for pagination truncating header list 
 
 = 1.95 =
 Strip slashes from email body when sending via SMTP

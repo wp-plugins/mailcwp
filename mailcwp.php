@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.95
+Version: 1.96
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.95);
+define ('MAILCWP_VERSION', 1.96);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -62,12 +62,18 @@ add_action('wp_ajax_mailcwp_get_account_folders', 'mailcwp_get_account_folders_c
 add_action( 'show_user_profile', 'mailcwp_profile_fields' );
 add_action( 'edit_user_profile', 'mailcwp_profile_fields' );
 
+add_action( 'init', 'mailcwp_init' );
+
 add_filter('mailcwp_options_dialog_tabs', 'mailcwp_account_options_tab', 10);
 add_filter('mailcwp_options_dialog_content', 'mailcwp_account_options_content', 10);
 add_filter('mailcwp_options_dialog_javascript', 'mailcwp_account_options_javascript', 10);
 
 register_activation_hook( __FILE__, 'mailcwp_install' );
 register_deactivation_hook( __FILE__, 'mailcwp_uninstall' );
+
+function mailcwp_init() {
+load_plugin_textdomain('mailcwp', false, dirname(plugin_basename(__FILE__)) . '/languages');
+}
 
 function mailcwp_install() {
   $upload_dir = wp_upload_dir();
@@ -139,12 +145,12 @@ function mailcwp_login_dialog($aAccountId) {
   '<div id="login-dialog-form">' .
   '<form>' .
   '<fieldset>' .
-  '  <label for="' . $username_id . '">' . __("Username") . '</label>' .
+  '  <label for="' . $username_id . '">' . __("Username", "mailcwp") . '</label>' .
   '  <input type="text" name="' . $username_id . '" id="' . $username_id . '" class="text ui-widget-content ui-corner-all" value="">' .
-  '  <label for="' . $password_id . '">' . __("Password") . '</label>' .
+  '  <label for="' . $password_id . '">' . __("Password", "mailcwp") . '</label>' .
   '  <input type="password" name="' . $password_id . '" id="' . $password_id . '" class="text ui-widget-content ui-corner-all" value="">' .
   '</fieldset>' .
-  '<button id="' . $login_id . '">' . __("Login") . '</button>' .
+  '<button id="' . $login_id . '">' . __("Login", "mailcwp") . '</button>' .
   '</form>' .
   '</div>' .
   '<script type="text/javascript">' .
@@ -282,7 +288,7 @@ function mailcwp_account_edit_dialog($user_id, $account = null, $full_form = fal
 
 function mailcwp_options_dialog() {
   $html = 
-  '<div id="dialog-form-options" title="' . __("Options") . '">' .
+  '<div id="dialog-form-options" title="' . __("Options", "mailcwp") . '">' .
   '  <div id="options-tabs">' .
   '    <ul>' .
   apply_filters("mailcwp_options_dialog_tabs", "") .
@@ -299,8 +305,8 @@ function mailcwp_options_dialog() {
 }
 
 function mailcwp_account_options_tab($text) {
-  $text .= "<li><a href=\"#accounts\">" . __("Accounts") . "</a></li>";
-  $text .= "<li><a href=\"#folders\">" . __("Folders") . "</a></li>";
+  $text .= "<li><a href=\"#accounts\">" . __("Accounts", "mailcwp") . "</a></li>";
+  $text .= "<li><a href=\"#folders\">" . __("Folders", "mailcwp") . "</a></li>";
   return $text;
 }
 
@@ -313,7 +319,7 @@ function mailcwp_account_options_content($text) {
 
   $text .= "<div id=\"accounts\">";
   $text .= "  <p><select id=\"account_menu\" class=\"ui-widget ui-widget-content\">";
-  $text .= "  <option value=\"\">" . __("Select account") . "</option>";
+  $text .= "  <option value=\"\">" . __("Select account", "mailcwp") . "</option>";
   if (is_array($accounts) && count($accounts) > 0) {
     foreach ($accounts as $account) {
       if (!empty($account["id"])) {
@@ -363,7 +369,7 @@ function mailcwp_account_options_content($text) {
 
   $text .= "<div id=\"folders\">";
   $text .= "  <p><select id=\"folder_account_menu\" class=\"ui-widget ui-widget-content\">";
-  $text .= "  <option value=\"\">" . __("Select account") . "</option>";
+  $text .= "  <option value=\"\">" . __("Select account", "mailcwp") . "</option>";
   if (is_array($accounts) && count($accounts) > 0) {
     foreach ($accounts as $account) {
       if (!empty($account["id"])) {
@@ -373,7 +379,7 @@ function mailcwp_account_options_content($text) {
   }
   $text .= "  </select><p/>";
   $text .= "  <input type=\"hidden\" id=\"mailcwp_folder_account_id\">";
-  $text .= "  <p><button id=\"mailcwp_folder_save\" disabled>" . __("Save") . "</button></p>";
+  $text .= "  <p><button id=\"mailcwp_folder_save\" disabled>" . __("Save", "mailcwp") . "</button></p>";
   $text .= "  <p>Sent Folder: <select id=\"mailcwp_options_sent_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
   $text .= "  <p>Trash Folder: <select id=\"mailcwp_options_trash_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
   $text .= "  <p>Draft Folder: <select id=\"mailcwp_options_draft_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
@@ -628,7 +634,7 @@ function mailcwp_admin_menu() {
 
 function mailcwp_admin_settings() {
   if ( !current_user_can( 'manage_options' ) )  {
-    wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+    wp_die( __( 'You do not have sufficient permissions to access this page.' , "mailcwp") );
   }
 
   $options = get_option("mailcwp_settings", array());
@@ -670,7 +676,7 @@ function mailcwp_admin_settings() {
     imap_timeout($imap_write_timeout, IMAP_WRITETIMEOUT);
     imap_timeout($imap_close_timeout, IMAP_CLOSETIMEOUT);
 
-    echo "<div class=\"updated\"><p><strong>" . __("Settings saved.") . "</strong></p></div>";
+    echo "<div class=\"updated\"><p><strong>" . __("Settings saved.", "mailcwp") . "</strong></p></div>";
   } else {
     $imap_open_timeout = isset($options["imap_open_timeout"]) ? $options["imap_open_timeout"] : 15;
     $imap_read_timeout = isset($options["imap_read_timeout"]) ? $options["imap_read_timeout"] : 15;
@@ -688,7 +694,7 @@ function mailcwp_admin_settings() {
     $max_contacts = isset($options["max_contacts"]) ? $options["max_contacts"] : 100;
   }
 
-  echo "<h2>MailCWP " . __("Settings") . "</h2>";
+  echo "<h2>MailCWP " . __("Settings", "mailcwp") . "</h2>";
 
   echo "<form name=\"mailcwp_settings_form\" method=\"post\" action=\"\">"; 
   $plugin_base_path = plugin_dir_path(__FILE__) . "../";
@@ -698,7 +704,7 @@ function mailcwp_admin_settings() {
   $composer_installed = file_exists($plugin_base_path . "mailcwp-composer");
   $signatures_installed = file_exists($plugin_base_path . "mailcwp-signatures");
   if (!$address_book_installed || !$advanced_search_installed || !$folders_installed || !$composer_installed || !$signatures_installed) { 
-    echo "  <h3>" . __("MailCWP AddOns") . "</h3>";
+    echo "  <h3>" . __("MailCWP AddOns", "mailcwp") . "</h3>";
     if (!$address_book_installed) {
       echo "<p><strong><a href=\"\">MailCWP Address Book</a></strong> - a full contact address book for your mail users.</p>";
     }
@@ -716,38 +722,38 @@ function mailcwp_admin_settings() {
     }
   }
   echo "  <input type=\"hidden\" name=\"mailcwp_admin_submit\" value=\"Y\">";
-  echo "  <h3>" . __("Display Options") . "</h3>";
-  echo "  <p>" . __("Hide WordPress Admin Bar") . ": <input type=\"checkbox\" name=\"hide_admin_bar\"" . ($hide_admin_bar ? " checked" : "") . "><br/>";
-  echo "  " . __("Hide Page Title") . ": <input type=\"checkbox\" name=\"hide_page_title\"" . ($hide_page_title ? " checked" : "") . "></p>";
-  echo "  <h3>" . __("User Options") . "</h3>";
-  echo "  <p>" . __("Allow user to manage accounts") . ": <input type=\"checkbox\" name=\"user_can_manage_accounts\"" . ($user_can_manage_accounts ? " checked" : "") . "><br/>";
-  echo "  " . __("Allow user to change theme") . ": <input type=\"checkbox\" name=\"user_can_change_theme\"" . ($user_can_change_theme ? " checked" : "") . "><br/>";
-  echo "  " . __("Default theme") . ": <select name=\"default_theme\" id=\"default_theme\"></select><br/>";
-  echo "  " . __("Store passwords:") . ": <input type=\"checkbox\" name=\"user_can_store_password\"" . ($user_can_store_password ? " checked" : "") . "></br>";
-  echo "  " . __("Maximum drop-down contacts") . ": <select name=\"max_contacts\">";
+  echo "  <h3>" . __("Display Options", "mailcwp") . "</h3>";
+  echo "  <p>" . __("Hide WordPress Admin Bar", "mailcwp") . ": <input type=\"checkbox\" name=\"hide_admin_bar\"" . ($hide_admin_bar ? " checked" : "") . "><br/>";
+  echo "  " . __("Hide Page Title", "mailcwp") . ": <input type=\"checkbox\" name=\"hide_page_title\"" . ($hide_page_title ? " checked" : "") . "></p>";
+  echo "  <h3>" . __("User Options", "mailcwp") . "</h3>";
+  echo "  <p>" . __("Allow user to manage accounts", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_manage_accounts\"" . ($user_can_manage_accounts ? " checked" : "") . "><br/>";
+  echo "  " . __("Allow user to change theme", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_change_theme\"" . ($user_can_change_theme ? " checked" : "") . "><br/>";
+  echo "  " . __("Default theme", "mailcwp") . ": <select name=\"default_theme\" id=\"default_theme\"></select><br/>";
+  echo "  " . __("Store passwords:", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_store_password\"" . ($user_can_store_password ? " checked" : "") . "></br>";
+  echo "  " . __("Maximum drop-down contacts", "mailcwp") . ": <select name=\"max_contacts\">";
   for ($i = 100; $i <= 1000; $i += 100) {
     echo "    <option value=\"$i\"" . ($i == $max_contacts ? " selected" : "") . ">$i</option>";
   }
   echo "  </select></p>";
   echo "";
-  echo "  <p><h3>IMAP " . __("Timeouts") . "</h3>";
-  echo "  " . __("Open") . ": <input type=\"text\" size=\"3\" name=\"imap_open_timeout\" value=\"$imap_open_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Read") . ": <input type=\"text\" size=\"3\" name=\"imap_read_timeout\" value=\"$imap_read_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Write") . ": <input type=\"text\" size=\"3\" name=\"imap_write_timeout\" value=\"$imap_write_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Close") . ": <input type=\"text\" size=\"3\" name=\"imap_close_timeout\" value=\"$imap_close_timeout\">&nbsp;sec<br/></p>";
+  echo "  <p><h3>IMAP " . __("Timeouts", "mailcwp") . "</h3>";
+  echo "  " . __("Open", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_open_timeout\" value=\"$imap_open_timeout\">&nbsp;sec<br/>";
+  echo "  " . __("Read", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_read_timeout\" value=\"$imap_read_timeout\">&nbsp;sec<br/>";
+  echo "  " . __("Write", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_write_timeout\" value=\"$imap_write_timeout\">&nbsp;sec<br/>";
+  echo "  " . __("Close", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_close_timeout\" value=\"$imap_close_timeout\">&nbsp;sec<br/></p>";
 
-  echo "  <p><h3>SMTP " . __("Timeouts") . "</h3>";
-  echo "  " . __("Connect") . ": <input type=\"text\" size=\"3\" name=\"smtp_connect_timeout\" value=\"$smtp_connect_timeout\">&nbsp;sec<br/></p>";
+  echo "  <p><h3>SMTP " . __("Timeouts", "mailcwp") . "</h3>";
+  echo "  " . __("Connect", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"smtp_connect_timeout\" value=\"$smtp_connect_timeout\">&nbsp;sec<br/></p>";
 
-  echo "  <p><h3>" . __("Refresh") . "</h3>";
-  echo "  " . __("Auto Refresh") . ": <input type=\"checkbox\" name=\"auto_refresh\"" . ($auto_refresh ? " checked" : "") . ">&nbsp;&nbsp;";
-  echo "  " . __("Refresh Interval") . ": <select name=\"refresh_interval\">";
+  echo "  <p><h3>" . __("Refresh", "mailcwp") . "</h3>";
+  echo "  " . __("Auto Refresh", "mailcwp") . ": <input type=\"checkbox\" name=\"auto_refresh\"" . ($auto_refresh ? " checked" : "") . ">&nbsp;&nbsp;";
+  echo "  " . __("Refresh Interval", "mailcwp") . ": <select name=\"refresh_interval\">";
   for ($i = 1; $i <= 10; $i++) {
     echo "    <option value=\"$i\"" . ($i == $refresh_interval ? " selected" : "") . ">$i</option>";
   }
   echo "  </select>&nbsp;min</p>";
   echo "  <p class=\"submit\">";
-  echo "    <input type=\"submit\" name=\"Submit\" class=\"button-primary\" value=\"" . __('Save Changes') . "\"/>";
+  echo "    <input type=\"submit\" name=\"Submit\" class=\"button-primary\" value=\"" . __('Save Changes', "mailcwp") . "\"/>";
   echo "  </p>";
   echo "</form>"; 
   echo "<script type=\"text/javascript\">";
@@ -1211,7 +1217,7 @@ function mailcwp_get_headers_callback () {
   }
 
   if (!isset($mailcwp_session) || empty($mailcwp_session)) {
-     echo __("No accounts found. Please contact the system administrator for assistance.");
+     echo __("No accounts found. Please contact the system administrator for assistance.", "mailcwp");
      die();
   }
 
@@ -1232,7 +1238,7 @@ function mailcwp_get_headers_callback () {
 
   $account = $mailcwp_session["account"];
   if (!isset($account)) {
-    echo __("No accounts found. Please contact the system administrator for assistance.");
+    echo __("No accounts found. Please contact the system administrator for assistance.", "mailcwp");
     die();
   }
   if (isset($_POST["all"]) && $_POST["all"] == "true") {
@@ -1243,7 +1249,7 @@ function mailcwp_get_headers_callback () {
 
   $password = mailcwp_get_account_password($account);
   if (empty($password)) {
-    echo __("Please login");
+    echo __("Please login", "mailcwp");
     die();
   }
   $folder = $mailcwp_session["folder"];
@@ -1297,9 +1303,9 @@ function mailcwp_get_headers_callback () {
 //write_log(print_r($search_result, true));
   $html = " <div id=\"mailcwp_headers_title\" class=\"ui-widget-header ui-corner-top ui-state-active\">";
   if (isset($_POST["search"]) && !empty($_POST["search"])) {
-    $html .= $folder . __(" Search: ") . $_POST["search"];
+    $html .= $folder . __(" Search: ", "mailcwp") . $_POST["search"];
   } else if ($must_search) {
-    $html .= $folder . __(" (Search)");
+    $html .= $folder . __(" (Search)", "mailcwp");
   } else {
     $html .= $folder;
   }
@@ -1323,9 +1329,16 @@ function mailcwp_get_headers_callback () {
     }
   }
   if ($page >= $num_page - 4) {
-    $paging_toolbar .= "&hellip;&nbsp;&nbsp";
-    for ($i = $num_page - 5; $i <= $num_page; $i++) {
-      $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
+    $start_page = $num_page - 5;
+    while ($start_page <= 0) {
+      $start_page += 1;
+    }
+
+    if ($start_page < $num_page) {
+      $paging_toolbar .= "&hellip;&nbsp;&nbsp";
+      for ($i = $start_page - 5; $i <= $num_page; $i++) {
+        $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
+      }
     }
   } else {
     $paging_toolbar .= "&hellip;&nbsp;&nbsp";
@@ -1414,7 +1427,7 @@ function mailcwp_get_message_callback() {
   $msg_number = (int)$_POST["msg_number"];
   $subject = $_POST["subject"];
   if (empty($subject)) {
-    $subject = __("[No Subject]");
+    $subject = __("[No Subject]", "mailcwp");
   } else {
     $subject = base64_decode($subject);
   }
@@ -1424,10 +1437,14 @@ function mailcwp_get_message_callback() {
 //write_log($message);
   $html_message = $message->getHtmlMessage();
   $plain_message = $message->getPlainMessage();
+//print_r( $html_message);
+//print_r( $plain_message);
   $attachments = $message->getAttachments();
   $headers = $message->getHeaders();
 //write_log($headers);
   $char_set = $message->getCharSet();
+//print_r($char_set);
+//exit;
 
   //process inline images
   if (isset($html_message)) {
@@ -1503,10 +1520,10 @@ function mailcwp_get_message_callback() {
   }
   $html .= "  <p/><span>Subject: $decoded_subject<p/>";
   $message_toolbar_html = "  <div id=\"mailcwp_message_toolbar\" class=\"ui-widget-header ui-corner-all\">" .
-  "    <button id=\"mailcwp_reply\">" . __("Reply") . "</button>" .
-  "    <button id=\"mailcwp_reply_all\">" . __("Reply to All") . "</button>" .
-  "    <button id=\"mailcwp_forward\">" . __("Forward") . "</button>" .
-  "    <button id=\"mailcwp_message_delete\">" . __("Delete") . "</button>";
+  "    <button id=\"mailcwp_reply\">" . __("Reply", "mailcwp") . "</button>" .
+  "    <button id=\"mailcwp_reply_all\">" . __("Reply to All", "mailcwp") . "</button>" .
+  "    <button id=\"mailcwp_forward\">" . __("Forward", "mailcwp") . "</button>" .
+  "    <button id=\"mailcwp_message_delete\">" . __("Delete", "mailcwp") . "</button>";
   if (isset($attachments) && sizeof($attachments) > 0) {
     $message_toolbar_html .= "<div id=\"download_forms\" style=\"display: none\">";
     $upload_dir = wp_upload_dir();
@@ -1528,8 +1545,8 @@ function mailcwp_get_message_callback() {
     }
     $message_toolbar_html .= "</div>";
     $message_toolbar_html .= "    <div id=\"attachment_set\" style=\"display: inline\">" .
-    "      <button id=\"save_attachment\" onclick=\"jQuery('#download-all-$msg_number').submit();\">" . __("Save Attachments") . "</button>" .
-    "      <button id=\"select_attachment\">" . __("Select an attachment") . "</button>" .
+    "      <button id=\"save_attachment\" onclick=\"jQuery('#download-all-$msg_number').submit();\">" . __("Save Attachments", "mailcwp") . "</button>" .
+    "      <button id=\"select_attachment\">" . __("Select an attachment", "mailcwp") . "</button>" .
     "    </div>" .
     "    <ul id=\"attachment_list\">";
     foreach ($attachments as $filename=>$data) {
@@ -1568,7 +1585,10 @@ function mailcwp_get_message_callback() {
     $html .= "</div>";
   } else if (isset($plain_message) && !empty($plain_message)) {
     //$html .= "<pre>" . $plain_message . "</pre>";
-    $html .= "<pre>" . substr($plain_message, 0, 2048) . "</pre>";
+    if (strlen($plain_message) > 4096) {
+      $html .= "The following message has been truncated:<br/>";
+    }
+    $html .= "<pre>" . substr($plain_message, 0, 4096) . "</pre>";
   } else {
     $html .= "<pre>NO HTML OR PLAIN TEXT</pre>";
   }
@@ -1607,7 +1627,7 @@ function mailcwp_get_message_callback() {
   $javascript.= "  jQuery(\"#attachment_list\").hide().menu();";
   $javascript.= apply_filters("mailcwp_received_javascript", "");
 
-  $utf8_html = @utf8_encode($html);
+  $utf8_html = $html; //@utf8_encode($html);
   if ($utf8_html == null) {
     $utf8_html = $html;
   }
@@ -1829,7 +1849,7 @@ function mailcwp_compose_callback () {
   if (!empty($subject)) {
     $title = $subject;
   } else {
-    $title = __("New Message");
+    $title = __("New Message", "mailcwp");
   }
   $html = "<div id=\"mailcwp_compose_dialog_$message_id\" title=\"$title\">";
   $html .= "  <form>";
@@ -1863,14 +1883,14 @@ function mailcwp_compose_callback () {
 
   $html .= "      <input type=\"text\" id=\"mailcwp_subject_$message_id\" name=\"mailcwp_subject_$message_id\" value=\"" . $subject_prefix . $subject . "\"></p>";
   $compose_toolbar_html = "  <div id=\"mailcwp_compose_toolbar_$message_id\">" .
-  "    <button id=\"mailcwp_attach_$message_id\">" . __("Attachments") . "</button>" .
+  "    <button id=\"mailcwp_attach_$message_id\">" . __("Attachments", "mailcwp") . "</button>" .
   "    <button id=\"mailcwp_extra_addresses_toggle_$message_id\"><sup>CC</sup>/<sub>BCC</sub></button>";
-  //"    <button id=\"mailcwp_toggle_format_$message_id\">" . __("Text/HTML") . "</button>";
+  //"    <button id=\"mailcwp_toggle_format_$message_id\">" . __("Text/HTML", "mailcwp") . "</button>";
   if (isset($attachments) && is_array($attachments) && count($attachments) > 0) {
     $compose_toolbar_html .= "    <div id=\"forward_attachment_set_$message_id\" style=\"display: inline\">" .
-    "      <button id=\"forward_attachment_$message_id\" onclick=\"jQuery('#forward-all-$message_id').submit();\">" . __("Forward Attachments") . "</button>" .
-    "      <button id=\"remove_attachment_$message_id\">" . __("Remove an attachment") . "</button>" .
-    "    </div>" .
+    "      <button id=\"forward_attachment_$message_id\" onclick=\"jQuery('#forward-all-$message_id').submit();\">" . __("Forward Attachments", "mailcwp") . "</button>" .
+    "      <button id=\"remove_attachment_$message_id\">" . __("Remove an attachment", "mailcwp") . "</button>";
+    $compose_toolbar_html .= "    </div>" .
     "    <ul id=\"forward_attachment_list_$message_id\">";
     foreach ($attachments as $filename=>$data) {
       $compose_toolbar_html .= "      <li><a href=\"javascript:void(0)\" onclick=\"jQuery('#download-$filename-$message_id').submit();\">$filename</a></li>";
@@ -1883,9 +1903,9 @@ function mailcwp_compose_callback () {
     $compose_toolbar_html .= "  jQuery(\"#forward_attachment_list_$message_id\").hide().menu();";
     $compose_toolbar_html .= "</script>";
   }
-  $compose_toolbar_html .= "  </div>";
-
   $html .= apply_filters("mailcwp_compose_toolbar", $compose_toolbar_html, $message_id);
+  $html .= "  </div>";
+
   $html .= "      <textarea id=\"mailcwp_message_$message_id\" name=\"mailcwp_message_$message_id\" cols=\"80\" rows=\"40\">";
   if ($mode != COMPOSE_EDIT_DRAFT) {
     $html .= apply_filters("mailcwp_compose_before_message", "", $account["id"]);
@@ -1906,7 +1926,7 @@ function mailcwp_compose_callback () {
   $html .= "	</div>";
   $html .= "</form>";*/
 
-  $html .= "<h4>" . __("Attachments") . "</h4>";
+  $html .= "<h4>" . __("Attachments", "mailcwp") . "</h4>";
   $html .= "<a name=\"mailcwp_compose_uploader_$message_id\"></a>";
   $html .= "<p>";
   $html .= "<div id=\"filelist_$message_id\">MailCWP is unable to attach files. Please contact the system administrator.</div>";
@@ -2588,7 +2608,7 @@ function mailcwp_handler ($atts, $content, $tag) {
   $smarty->setCacheDir(plugin_dir_path(__FILE__) . '/cache');
 
   if (!is_user_logged_in()) {
-    //wp_die(__("Please login to view this page."));
+    //wp_die(__("Please login to view this page.", "mailcwp"));
     //wp_redirect(wp_login_url("$_SERVER[PHP_SELF]"));
     echo "<p>Please login to view this page.</p><p>You will be redirected in a moment. If you are not redirected click <a href=\"#\" onclick=\"window.location = '" . wp_login_url() . "?redirect_to=' + window.location.href;\">here</a>.<script type=\"text/javascript\">window.location = '" . wp_login_url() . "?redirect_to=' + window.location.href;</script>";
     exit;
@@ -2615,14 +2635,14 @@ function mailcwp_handler ($atts, $content, $tag) {
 //write_log("Accounts " . print_r($accounts, true));
   $smarty->assign('labels', 
     array(
-      "compose" => __("Compose New Message"),
-      "refresh" => __("Refresh Folders"),
-      "options" => __("Options"),
-      "themes" => __("Theme"),
-      "mark_read" => __("Mark Read"),
-      "mark_unread" => __("Mark Unread"),
-      "delete" => __("Delete"),
-      "search" => __("Find Messages")));
+      "compose" => __("Compose New Message", "mailcwp"),
+      "refresh" => __("Refresh Folders", "mailcwp"),
+      "options" => __("Options", "mailcwp"),
+      "themes" => __("Theme", "mailcwp"),
+      "mark_read" => __("Mark Read", "mailcwp"),
+      "mark_unread" => __("Mark Unread", "mailcwp"),
+      "delete" => __("Delete", "mailcwp"),
+      "search" => __("Find Messages", "mailcwp")));
   $smarty->assign('user_change_theme', isset($options) && isset($options["user_change_theme"]) ? $options["user_change_theme"] : true); 
   $smarty->assign('set1_extensions', apply_filters("mailcwp_toolbar_set1", ""));
   $smarty->assign('set2_extensions', apply_filters("mailcwp_toolbar_set2", ""));
@@ -2669,7 +2689,7 @@ function mailcwp_handler ($atts, $content, $tag) {
 		  $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
 		  $folders = imap_listmailbox($mbox, "{" . $mbox_name . $use_ssl_flag . "}", "*");
 		  if ($folders === false) {
-		    echo __("No folders found.");
+		    echo __("No folders found.", "mailcwp");
 		  } else {
 		    $folder_tree = array();
 		    foreach ($folders as $folder) {
@@ -2693,8 +2713,8 @@ function mailcwp_handler ($atts, $content, $tag) {
 		  imap_close($mbox);
 		  /*$folder_toolbar_html = "  <div id=\"mailcwp_folder_toolbar_$account[name]\" class=\"mailcwp_folder_toolbar ui-widget-header ui-corner-all\">" .
 		 (isset($options["user_manage_accounts"]) && $options["user_manage_accounts"] == true ? 
-		  "    <button id=\"mailcwp_folder_settings_$account[id]\" class=\"mailcwp_folder_settings\">" . __("Account Settings") . "</button>" .
-		  "    <button id=\"mailcwp_close_account_$account[id]\" data=\"" . str_replace(" ", "_", $account["name"]) . "\" class=\"mailcwp_close_account\">" . __("Remove Account") . "</button>" : "") .
+		  "    <button id=\"mailcwp_folder_settings_$account[id]\" class=\"mailcwp_folder_settings\">" . __("Account Settings", "mailcwp") . "</button>" .
+		  "    <button id=\"mailcwp_close_account_$account[id]\" data=\"" . str_replace(" ", "_", $account["name"]) . "\" class=\"mailcwp_close_account\">" . __("Remove Account", "mailcwp") . "</button>" : "") .
 		  "  </div>";
 		  echo $folder_toolbar_html;*/
 		?>
@@ -2712,7 +2732,7 @@ function mailcwp_handler ($atts, $content, $tag) {
       ?>
     </div>
     <div id="mailcwp_headers" class="ui-widget-content ui-corner-bottom">
-       <?php _e(is_array($accounts) && count($accounts) > 0 ? "No messages found." : "No accounts found. Please contact the sysadmin administrator for assistance.") ?>
+       <?php _e(is_array($accounts) && count($accounts) > 0 ? "No messages found." : "No accounts found. Please contact the sysadmin administrator for assistance.", "mailcwp") ?>
     </div>
   </div>
   <div id="mailcwp_prologue">
