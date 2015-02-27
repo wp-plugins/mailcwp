@@ -25,12 +25,13 @@ jui_theme_switch) it looks great. Attachments are managed using
 plUpload to quickly add file attachments with no need for page refreshes.
 
 Several add-ons are available to make MailCWP even more powerful.
-1. [MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book) – Manage all your email contacts.
-1. [MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search) – Find messages quickly.
-1. [MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer) – An advanced text editor.
-1. [MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders) – Manage email folders.
-1. [MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures) – Automatically add a signature to email messages.
-1. [MailCWP Macros](http://cadreworks.com/mailcwp-plugin/mailcwp-macros) – Quickly insert standard templates into email messages.
+
+* **[MailCWP Address Book](http://cadreworks.com/mailcwp-plugin/mailcwp-address-book)** – Manage all your email contacts.
+* **[MailCWP Advanced Search](http://cadreworks.com/mailcwp-plugin/mailcwp-advanced-search)** – Find messages quickly.
+* **[MailCWP Composer](http://cadreworks.com/mailcwp-plugin/mailcwp-composer)** – An advanced text editor.
+* **[MailCWP Folders](http://cadreworks.com/mailcwp-plugin/mailcwp-folders)** – Manage email folders.
+* **[MailCWP Signatures](http://cadreworks.com/mailcwp-plugin/mailcwp-signatures)** – Automatically add a signature to email messages.
+* **[MailCWP Macros](http://cadreworks.com/mailcwp-plugin/mailcwp-macros)** – Quickly insert standard templates into email messages.
 
 See [MailCWP Plugin](http://cadreworks.com/mailcwp-plugin) for more information.
 
