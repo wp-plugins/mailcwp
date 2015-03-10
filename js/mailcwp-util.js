@@ -5,10 +5,11 @@ window.onbeforeunload = function() {
 };
 
 function processAjaxResponse(aResponse) {
-  //console.log(aResponse);
+  console.log(aResponse);
   try {
     vData = jQuery.parseJSON(aResponse);
   } catch (e) {
+    console.log(aResponse);
     display_notice("Unable to parse Ajax response. " + e.message);
     return false;
   }
@@ -27,7 +28,7 @@ function processAjaxResponse(aResponse) {
 	eval(vData.javascript);
         return true;
       } catch (e) {
-	display_notice("Error " + e.message);
+	display_notice("Error evaluating JavaScript " + e.message);
       }
     } else {
       return true;
@@ -45,7 +46,8 @@ function processAjaxResponse(aResponse) {
 
 function display_notice(aNotice){
   if (!mDisableErrorNotice) {
-    vNoticeId = (Date.now() + "_" + (Math.random() * 1000)).replace(".", "_");
+alert(aNotice);
+    /*vNoticeId = (Date.now() + "_" + (Math.random() * 1000)).replace(".", "_");
     vDialogId = "mailcwp_notice_" + vNoticeId;
     vHtml = "<div id=\"" + vDialogId + "\" title=\"Notice\">";
     vHtml += aNotice;
@@ -55,7 +57,7 @@ function display_notice(aNotice){
       close: function() {
 	jQuery("#" + vDialogId).remove();
       }
-    });
+    });*/
   }
 }
 
@@ -214,7 +216,7 @@ function getFieldsFromForm(aForm) {
   });
 }*/
 
-function confirm(aMessage, aYesCallback, aNoCallback, aCancelCallback) {
+function mailcwpConfirm(aMessage, aYesCallback, aNoCallback, aCancelCallback) {
   vHtml = "<div id=\"mailcwp-confirm\" title=\"Confirm\">";
   vHtml += "<p><span class=\"ui-icon ui-icon-alert\" style=\"float: left; margin: 0 7px 20px 0\"></span>";
   vHtml += aMessage;

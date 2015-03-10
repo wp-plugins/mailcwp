@@ -55,7 +55,7 @@ jQuery(document).ready(function() {
   jQuery( "#mailcwp-add-account" ).click(function() {
     editAccount(null, null, jQuery(this).attr("data"), false);
   });
-  jQuery("#account-edit-save").button().click(function () {
+  /*jQuery("#account-edit-save").button().click(function () {
     jQuery.ajax({
       type: "POST",
       url: ajaxurl,
@@ -96,7 +96,7 @@ jQuery(document).ready(function() {
         alert("Error: " + aTextStatus + "/" + aErrorThrown);
       }
     });
-  });
+  });*/
   jQuery("#account-edit-test").button().click(function () {
     jQuery.ajax({
       type: "POST",
@@ -120,6 +120,7 @@ jQuery(document).ready(function() {
 	mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
       },
       success: function(aData) {
+//console.log(aData);
         try {
           vData = jQuery.parseJSON(aData);
           if (vData.hasOwnProperty("result") && vData.result == "OK") {
@@ -130,7 +131,8 @@ jQuery(document).ready(function() {
           }
         } catch (e) {
           //display_notice("Error " + e.message);
-          alert("Error " + e.message);
+          console.log(aData);
+          alert("Error processing response " + e.message);
         }
       },
       error: function(aObject, aTextStatus, aErrorThrown) {
@@ -204,13 +206,21 @@ function submitAccountEditForm() {
       mailcwp_timezone: jQuery("#mailcwp_timezone").val(),
       mailcwp_smtp_host: jQuery("#mailcwp_smtp_host").val(),
       mailcwp_smtp_port: jQuery("#mailcwp_smtp_port").val(),
-      mailcwp_smtp_sername: jQuery("#mailcwp_smtp_username").val(),
+      mailcwp_smtp_username: jQuery("#mailcwp_smtp_username").val(),
       mailcwp_smtp_password: jQuery("#mailcwp_smtp_password").val(),
       mailcwp_smtp_auth: jQuery("#mailcwp_smtp_auth").prop("checked"),
       mailcwp_alert_sound: jQuery("#mailcwp_alert_sound").prop("checked")
     },
     success: function(aData) {
-      processAjaxResponse(aData);
+      vData = jQuery.parseJSON(aData);
+      if (vData.hasOwnProperty("result") && vData.result == "OK") {
+        jQuery('#account-edit-form').hide(); 
+        jQuery('#account-profile-table').show();
+        alert("Account saved.");
+        window.location.reload();
+      } else {
+        processAjaxResponse(aData);
+      }
     },
     error: function(aObject, aTextStatus, aErrorThrown) {
       alert("Error: " + aTextStatus + "/" + aErrorThrown);

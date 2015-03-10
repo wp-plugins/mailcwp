@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 4.1
-Stable tag: 1.96
+Stable tag: 1.97
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,13 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 3. The Options dialog. Add/Edit IMAP accounts and setup Sent, Trash and Drafts folders.
 
 == Changelog ==
+
+= 1.97 =
+Enhancements to support the MailCWP Calendar add-on.
+Set default folder for each account
+Set number of headers per page for each account
+Fix for conflicts with User Role Editor and other admin plugins
+Fix for duplicates created when adding new accounts
 
 = 1.96 =
 Add localisation and translation files
@@ -118,6 +125,13 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 * First release
 
 == Upgrade Notice ==
+
+= 1.97 =
+Enhancements to support the MailCWP Calendar add-on.
+Set default folder for each account
+Set number of headers per page for each account
+Fix for conflicts with User Role Editor and other admin plugins
+Fix for duplicates created when adding new accounts
 
 = 1.96 =
 Add localisation and translation files

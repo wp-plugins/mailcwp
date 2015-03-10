@@ -464,7 +464,7 @@ console.log(jQuery('#filelist_' + vUniqueId));
             vSent = jQuery("#mailcwp_sent_" + vUniqueId).val();
             if (vSent != "SENT") {
               e.preventDefault();
-              confirm("Save a draft copy of this message?", saveDraftAndClose, deleteDraftAndClose, function(){}, aMsgNumber, vUniqueId);
+              mailcwpConfirm("Save a draft copy of this message?", saveDraftAndClose, deleteDraftAndClose, function(){}, aMsgNumber, vUniqueId);
             }
 	  },
           close: function(e, ui) {
@@ -672,6 +672,30 @@ function deleteMessages(aMessages) {
       jQuery("#progressbar").hide();
       jQuery(".ui-tooltip").hide();
       jQuery(document).trigger("mailcwp_message_selection_off");
+      refresh(false);
+    }
+  });
+}
+
+function setPageSize(aPageSize) {
+  jQuery("#progressbar").show();
+  jQuery.ajax ({
+    type: "POST", 
+    url: ajax_object.ajax_url, 
+    data: { 
+      action: "mailcwp_set_page_size",
+      page_size: aPageSize
+    }, 
+    error: function(aObject, aTextStatus, aErrorThrown) { 
+      jQuery("#progressbar").hide();
+      display_notice("Unable to set page size: " + aTextStatus + "/" + aErrorThrown); 
+    }, 
+    success: function (aData) { 
+console.log(aData);
+      //alert(aHtml);
+      jQuery("#progressbar").hide();
+      jQuery(".ui-tooltip").hide();
+      //jQuery(document).trigger("mailcwp_message_selection_off");
       refresh(false);
     }
   });

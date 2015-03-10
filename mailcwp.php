@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.96
+Version: 1.97
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.96);
+define ('MAILCWP_VERSION', 1.97);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -51,6 +51,7 @@ add_action('wp_ajax_mailcwp_delete_draft', 'mailcwp_delete_draft_callback');
 add_action('wp_ajax_mailcwp_mark_read', 'mailcwp_mark_read_callback');
 add_action('wp_ajax_mailcwp_mark_unread', 'mailcwp_mark_unread_callback');
 add_action('wp_ajax_mailcwp_delete', 'mailcwp_delete_callback');
+add_action('wp_ajax_mailcwp_set_page_size', 'mailcwp_set_page_size_callback');
 
 add_action('wp_ajax_mailcwp_change_theme', 'mailcwp_change_theme_callback');
 add_action('wp_ajax_mailcwp_compose_close', 'mailcwp_compose_close_callback');
@@ -133,7 +134,8 @@ function mailcwp_imap_connect($account, $options, $folder) {
   $use_tls_flag = $use_tls === "true" ? "/tls" : "";
   
 //write_log("FLAGS " . $use_ssl_flag . " " . $validate_cert_flag);
-  $mbox = imap_open("{" . $mbox_name . $use_ssl_flag . $validate_cert_flag . $use_tls_flag . "}$folder", $username, $password, $options);
+  error_reporting(E_ERROR);
+  $mbox = @imap_open("{" . $mbox_name . $use_ssl_flag . $validate_cert_flag . $use_tls_flag . "}$folder", $username, $password, $options);
   return $mbox;
 }
 
@@ -197,6 +199,7 @@ function mailcwp_get_account_folders($account) {
     for ($i = 0; $i < $count_folders; $i++) {
       $folders["list"][$i] = substr($folders["list"][$i], strpos($folders["list"][$i], "}") + 1);
     }
+    $folders["auto_default_folder"] = mailcwp_find_folder($mbox, $account, "INBOX");
     $folders["auto_sent_folder"] = mailcwp_find_folder($mbox, $account, "Sent");
     $folders["auto_trash_folder"] = mailcwp_find_folder($mbox, $account, "Trash");
     $folders["auto_draft_folder"] = mailcwp_find_folder($mbox, $account, "Draft");
@@ -364,6 +367,7 @@ function mailcwp_account_options_content($text) {
   $text .= "    <span>SMTP Username: <input type=\"text\" name=\"mailcwp_account_smtp_username\" id=\"mailcwp_account_smtp_username\"/></span>";
   $text .= "    <span>SMTP Password: <input type=\"password\" name=\"mailcwp_account_smtp_password\" id=\"mailcwp_account_smtp_password\"/></span>";
   $text .= "    <span style=\"$style\">Sound alert when new mail arrives: <input type=\"checkbox\" name=\"mailcwp_account_alert_sound\" id=\"mailcwp_account_alert_sound\"/></span></p>";
+  $text .= "    <span style=\"$style\">Default account: <input type=\"checkbox\" name=\"mailcwp_account_default\" id=\"mailcwp_account_default\"/></span></p>";
   $text .= "  </div>";
   $text .= "</div>";
 
@@ -380,6 +384,7 @@ function mailcwp_account_options_content($text) {
   $text .= "  </select><p/>";
   $text .= "  <input type=\"hidden\" id=\"mailcwp_folder_account_id\">";
   $text .= "  <p><button id=\"mailcwp_folder_save\" disabled>" . __("Save", "mailcwp") . "</button></p>";
+  $text .= "  <p>Default Folder: <select id=\"mailcwp_options_default_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
   $text .= "  <p>Sent Folder: <select id=\"mailcwp_options_sent_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
   $text .= "  <p>Trash Folder: <select id=\"mailcwp_options_trash_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
   $text .= "  <p>Draft Folder: <select id=\"mailcwp_options_draft_folder\" class=\"ui-widget ui-widget-content\"></select></p>";
@@ -461,6 +466,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        mailcwp_smtp_password: jQuery(\"#mailcwp_account_smtp_password\").val(),";
   $text .= "        mailcwp_smtp_auth: jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\"),";
   $text .= "        mailcwp_alert_sound: jQuery(\"#mailcwp_account_alert_sound\").prop(\"checked\"),";
+  $text .= "        mailcwp_account_default: jQuery(\"#mailcwp_account_default\").prop(\"checked\"),";
   $text .= "      },";
   $text .= "      success: function(aData) {";
   //$text .= "         jQuery(\"#remove_account_dialog_\" + aAccountId).dialog(\"close\");";
@@ -535,6 +541,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        jQuery(\"#mailcwp_account_smtp_password\").val(vData.account.smtp_password),";
   $text .= "        jQuery(\"#mailcwp_account_smtp_auth\").prop(\"checked\", vData.account.smtp_auth === \"true\"),";
   $text .= "        jQuery(\"#mailcwp_account_alert_sound\").prop(\"checked\", vData.account.alert_sound === \"true\"),";
+  $text .= "        jQuery(\"#mailcwp_account_default\").prop(\"checked\", vData.account.default === \"true\"),";
   //$text .= "        jQuery(\"#mailcwp_account_test\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_save\").button(\"enable\");";
   $text .= "        jQuery(\"#mailcwp_account_remove\").button(\"enable\");";
@@ -565,6 +572,8 @@ function mailcwp_account_options_javascript($text) {
   $text .= "          vData.folders.list.forEach(function(aElement) {";
   $text .= "            vOptions += \"<option value='\" + aElement + \"'>\" + aElement + \"</option>\";";
   $text .= "          });";
+  $text .= "          jQuery(\"#mailcwp_options_default_folder\").html(vOptions);"; 
+  $text .= "          jQuery(\"#mailcwp_options_default_folder\").val(vData.account.default_folder == '' ? vData.folders.auto_default_folder : vData.account.default_folder);";
   $text .= "          jQuery(\"#mailcwp_options_sent_folder\").html(vOptions);"; 
   $text .= "          jQuery(\"#mailcwp_options_sent_folder\").val(vData.account.sent_folder == '' ? vData.folders.auto_sent_folder : vData.account.sent_folder);";
   $text .= "          jQuery(\"#mailcwp_options_trash_folder\").html(vOptions);"; 
@@ -576,6 +585,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "      }";
   $text .= "    });";
   $text .= "  } else {";
+  $text .= "    jQuery(\"#mailcwp_options_default_folder\").html(\"\");"; 
   $text .= "    jQuery(\"#mailcwp_options_sent_folder\").html(\"\");"; 
   $text .= "    jQuery(\"#mailcwp_options_trash_folder\").html(\"\");"; 
   $text .= "    jQuery(\"#mailcwp_options_draft_folder\").html(\"\");"; 
@@ -590,6 +600,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "      action: \"mailcwp_edit_account\",";
   $text .= "      mailcwp_user_id: " . get_current_user_id() . ",";
   $text .= "      mailcwp_account_id: jQuery(\"#mailcwp_folder_account_id\").val(),";
+  $text .= "      mailcwp_default_folder: jQuery(\"#mailcwp_options_default_folder\").val(),";
   $text .= "      mailcwp_sent_folder: jQuery(\"#mailcwp_options_sent_folder\").val(),";
   $text .= "      mailcwp_draft_folder: jQuery(\"#mailcwp_options_draft_folder\").val(),";
   $text .= "      mailcwp_trash_folder: jQuery(\"#mailcwp_options_trash_folder\").val(),";
@@ -600,6 +611,7 @@ function mailcwp_account_options_javascript($text) {
   $text .= "        if (vData.hasOwnProperty(\"result\") && vData.result == \"OK\") {";
   $text .= "          display_notice(\"Changes saved\");";
   $text .= "          jQuery(\"#folder_account_menu\").val(\"\");";
+  $text .= "          jQuery(\"#mailcwp_options_default_folder\").html(\"\");"; 
   $text .= "          jQuery(\"#mailcwp_options_sent_folder\").html(\"\");"; 
   $text .= "          jQuery(\"#mailcwp_options_trash_folder\").html(\"\");"; 
   $text .= "          jQuery(\"#mailcwp_options_draft_folder\").html(\"\");"; 
@@ -788,8 +800,8 @@ function mailcwp_admin_scripts() {
   /*wp_register_style('mailcwp_ui_styles', plugins_url('/css/jquery-ui-themes/pepper-grinder/jquery-ui.css', __FILE__));
   wp_enqueue_style('mailcwp_ui_styles');*/
 
-  wp_register_style('mailcwp_admin_styles', plugins_url('/css/mailcwp-admin.css', __FILE__));
-  wp_enqueue_style('mailcwp_admin_styles');
+  //wp_register_style('mailcwp_admin_styles', plugins_url('/css/mailcwp-admin.css', __FILE__));
+  //wp_enqueue_style('mailcwp_admin_styles');
 
   //wp_enqueue_script('mailcwp_admin_ui_script', plugins_url('/js/jquery-ui-1.10.4.custom.min.js', __FILE__));
   wp_enqueue_script('mailcwp_util_script', plugins_url('/js/mailcwp-util.js', __FILE__));
@@ -892,22 +904,18 @@ function mailcwp_scripts() {
 function mailcwp_get_account_callback () {
   $data = array();
   if (isset($_POST["account_id"]) && !empty($_POST["account_id"])) {
-    $account_id = $_POST["account_id"];
     if (isset($_POST["user_id"])) {
       $user_id = $_POST["user_id"];
     } else {
       $user_id = get_current_user_id();
     }
-    $user_mail_accounts = get_user_meta($user_id, "mailcwp_accounts", true);
-    foreach($user_mail_accounts as $user_mail_account) {
-      if ($user_mail_account["id"] == $account_id) {
-        $data["account"] = $user_mail_account;
-        $data["result"] = "OK";
-      }
-    }
-    if (empty($data)) {
+    $user_mail_account = mailcwp_get_account($user_id, $_POST["account_id"]);
+    if (empty($user_mail_account)) {
       $data["result"] = "Failed";
-      $data["message"] = "No account with ID $account_id found.";
+      $data["message"] = "No account with ID $_POST[account_id] found.";
+    } else {
+      $data["account"] = $user_mail_account;
+      $data["result"] = "OK";
     }
   } else {
     $data["result"] = "Failed";
@@ -916,6 +924,23 @@ function mailcwp_get_account_callback () {
 
   echo json_encode($data);
   die();
+}
+
+function mailcwp_get_account ($user_id, $account_id) {
+  $account = null;
+
+  $account_id = $account_id;
+  $user_mail_accounts = get_user_meta($user_id, "mailcwp_accounts", true);
+  $default_account_id = get_user_meta($user_id, "mailcwp_account_default", true);
+  foreach($user_mail_accounts as $user_mail_account) {
+    if ($user_mail_account["id"] == $account_id) {
+      $account = $user_mail_account;
+      if ($default_account_id == $account_id) {
+        $account["default"] = "true";
+      }
+    }
+  }
+  return $account;
 }
 
 function mailcwp_edit_account_callback () {
@@ -984,6 +1009,9 @@ function mailcwp_edit_account_callback () {
     if (isset($_POST["mailcwp_alert_sound"])) {
       $data["alert_sound"] = $_POST["mailcwp_alert_sound"];
     }
+    if (isset($_POST["mailcwp_default_folder"])) {
+      $data["default_folder"] = $_POST["mailcwp_default_folder"];
+    }
     if (isset($_POST["mailcwp_sent_folder"])) {
       $data["sent_folder"] = $_POST["mailcwp_sent_folder"];
     }
@@ -1003,7 +1031,12 @@ function mailcwp_edit_account_callback () {
     }
 //write_log("DATA AFTER ASSIGNMENT " . print_r($data, true));
     $user_mail_accounts[$account_id] = $data;
+//write_log("USER ACCOUNTS AFTER ASSIGNMENT " . print_r($user_mail_accounts, true));
+
     update_user_meta($user_id, "mailcwp_accounts", $user_mail_accounts);
+    if (isset($_POST["mailcwp_account_default"])) {
+      update_user_meta($user_id, "mailcwp_account_default", $account_id);
+    }
     do_action("mailcwp_account_edited", $account_id);
     $result["result"] = "OK";
     $result["account_id"] = $account_id;
@@ -1121,7 +1154,11 @@ function mailcwp_test_account_callback () {
     $ssl_flag = $use_ssl === "true" ? "/ssl" : "";
     $validate_cert_flag = $validate_cert === "true" ? "" : "/novalidate-cert";
     $tls_flag = $use_tls === "true" ? "/tls" : "";
-    $mbox = imap_open("{" . $mbox_name . $ssl_flag . $validate_cert_flag . $tls_flag . "}", $username, $password, OP_HALFOPEN);
+    error_reporting(E_ERROR);
+    ob_start();
+    $mbox = @imap_open("{" . $mbox_name . $ssl_flag . $validate_cert_flag . $tls_flag . "}", $username, $password, OP_HALFOPEN);
+    ob_end_clean();
+
     if ($mbox !== FALSE) {
       $folders = imap_listmailbox($mbox, "{" . $mbox_name . "}", "*");
       if ($folders !== FALSE) {
@@ -1230,6 +1267,12 @@ function mailcwp_get_headers_callback () {
   if (isset($_POST["account"]) && !empty($_POST["account"])) {
     $current_user = wp_get_current_user();
     $accounts = get_user_meta($current_user->ID, "mailcwp_accounts", true);
+/*if (isset($accounts[""])) {
+write_log("FIXING EMPTy KEY");
+$accounts[$accounts[""]["id"]] = $accounts[""];
+unset($accounts[""]);
+update_user_meta($current_user->ID, "mailcwp_accounts", $accounts);
+}*/
     if (isset($accounts[$_POST["account"]])) {
       $mailcwp_session["account"] = $accounts[$_POST["account"]];
       update_user_meta($current_user->ID, "mailcwp_session", $mailcwp_session);
@@ -1255,6 +1298,8 @@ function mailcwp_get_headers_callback () {
   $folder = $mailcwp_session["folder"];
 
   $page = $_POST["page"];
+  $page_size = (isset($account["page_size"]) ? $account["page_size"] : 20);
+//print_r($account);
   if (isset($_POST["all"]) && $_POST["all"] == "true") {
     do_action("mailcwp_clear_search_criteria");
   }
@@ -1289,13 +1334,13 @@ function mailcwp_get_headers_callback () {
   }
 //write_log(print_r($search_result, true));
   $num_msg = count($search_result);
-  $num_page = ceil($num_msg / 20);
-  $start = $num_msg - (($page - 1) * 20);
+  $num_page = ceil($num_msg / $page_size);
+  $start = $num_msg - (($page - 1) * $page_size);
   if ($start < 1) {
     $start = $num_msg;
   }
   $start -= 1;
-  $end = $start - 20;
+  $end = $start - $page_size;
   if ($end < 0) {
     $end = 0;
   }
@@ -1328,7 +1373,7 @@ function mailcwp_get_headers_callback () {
       }
     }
   }
-  if ($page >= $num_page - 4) {
+  if ($page >= $num_page - 4 && $num_page > 3) {
     $start_page = $num_page - 5;
     while ($start_page <= 0) {
       $start_page += 1;
@@ -1336,16 +1381,26 @@ function mailcwp_get_headers_callback () {
 
     if ($start_page < $num_page) {
       $paging_toolbar .= "&hellip;&nbsp;&nbsp";
-      for ($i = $start_page - 5; $i <= $num_page; $i++) {
+      for ($i = $start_page; $i <= $num_page; $i++) {
         $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
       }
     }
-  } else {
+  } else if ($num_page > 3) {
     $paging_toolbar .= "&hellip;&nbsp;&nbsp";
     for ($i = $num_page - 2; $i <= $num_page; $i++) {
       $paging_toolbar .= "<a class=\"mailcwp_page_number" . ($i == $page ? "_selected" : "") . "\" href=\"javascript:void(0)\" onclick=\"getHeaders(false, $i)\">$i</a>&nbsp;&nbsp;";
     }
   }
+  $paging_toolbar .= "&nbsp|&nbsp;Items&nbsp;per&nbsp;page&nbsp;<select style=\"max-width:100px;\" onchange=\"setPageSize(this.value);\">";
+  $itemsPerPageOptions = array(10, 20, 30, 40, 50, 100);
+  foreach ($itemsPerPageOptions as $option) {
+    $selected = "";
+    if ($option == $page_size) {
+      $selected = " selected";
+    }
+    $paging_toolbar .= "<option$selected>$option</option>";
+  }
+  $paging_toolbar .= "</select>";
   $paging_toolbar .= "</div>";
 //write_log($folder . "===" . $sent_folder);
   $html .= apply_filters("mailcwp_paging_toolbar", $paging_toolbar);
@@ -1436,10 +1491,13 @@ function mailcwp_get_message_callback() {
   $message = new MailMessage($mbox, $msg_number);  
 //write_log($message);
   $html_message = $message->getHtmlMessage();
+  //$html_message = apply_filters("mailcwp_get_html_message", $msg_number, $html_message, false);
   $plain_message = $message->getPlainMessage();
+  //$plain_message = apply_filters("mailcwp_get_plain_message", $msg_number, $plain_message, false);
 //print_r( $html_message);
 //print_r( $plain_message);
   $attachments = $message->getAttachments();
+  //$attachments = apply_filters("mailcwp_get_attachments", $msg_number, $attachments, false);
   $headers = $message->getHeaders();
 //write_log($headers);
   $char_set = $message->getCharSet();
@@ -1821,12 +1879,14 @@ function mailcwp_compose_callback () {
       $subject = "";
     }
     if ($html_message) {
+      $html_message = apply_filters("mailcwp_get_html_message", $html_message, true);
       $message = $html_message;
       if ($mode != COMPOSE_EDIT_DRAFT) {
         $message = preg_replace("/(^|<br\/>)/i", "<br/>&gt; ", $message);
       }
       $message = "On $original_date, at $original_time, $original_from wrote:<br/>$message";
     } else {
+      $plain_message = apply_filters("mailcwp_get_plain_message", $plain_message, true);
       $message = $plain_message;
       if ($mode != COMPOSE_EDIT_DRAFT) {
         //$message = preg_replace("/(^|\\n)/", "\n> ", $message);
@@ -2188,7 +2248,7 @@ function mailcwp_delete_draft_callback() {
   $draft_folder = "";
   if (is_array($account)) {
     //keep copy in sent folder
-    $draft_folder = $account["draft_folder"];
+    $draft_folder = isset($account["draft_folder"]) ? $account["draft_folder"] : null;
     $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
     if (empty($draft_folder)) {
       $draft_folder = mailcwp_find_folder($mbox, $account, "Draft");
@@ -2548,6 +2608,37 @@ function mailcwp_delete_callback () {
   die();
 }
 
+function mailcwp_set_page_size_callback() {
+  $result = array();
+
+  if (isset($_POST["page_size"])) {
+    $mailcwp_session = mailcwp_get_session();
+    $account = $mailcwp_session["account"];
+    if (isset($account)) {
+      $current_user = wp_get_current_user();
+      $account["page_size"] = $_POST["page_size"];
+      $mailcwp_session["account"] = $account;
+
+      $user_mail_accounts = get_user_meta($current_user->ID, "mailcwp_accounts", true);
+      $user_mail_accounts[$account["id"]] = $account;
+
+      update_user_meta($current_user->ID, "mailcwp_accounts", $user_mail_accounts);
+      update_user_meta($current_user->ID, "mailcwp_session", $mailcwp_session);
+
+      $result["result"] = "OK";
+      $result["message"] = "Page size set";
+    } else {
+      $result["result"] = "Failed";
+      $result["message"] = "Account not found";
+    }
+  } else {
+    $result["result"] = "Failed";
+    $result["message"] = "No page size provided";
+  }
+  echo json_encode($result);
+  die();
+}
+
 /*function mailcwp_folder_settings_callback() {
 write_log("FOLDER SETTINGS");
   $account_to_edit = null;
@@ -2630,6 +2721,7 @@ function mailcwp_handler ($atts, $content, $tag) {
 
   $current_user = wp_get_current_user();
   $accounts = get_user_meta($current_user->ID, "mailcwp_accounts", true);
+  $default_account_id = get_user_meta($current_user->ID, "mailcwp_account_default", true);
 
 //write_log("CURRENT USER " . print_r($current_user, true));
 //write_log("Accounts " . print_r($accounts, true));
@@ -2665,64 +2757,75 @@ function mailcwp_handler ($atts, $content, $tag) {
     }
   }
   $smarty->assign('passwords', $passwords);*/
+  
 ?>
   <div id="mailcwp_container" class="ui-widget-content">
     <div id="mailcwp_accounts" class="ui-widget-content">
       <?php
       if (is_array($accounts)) {
-	foreach ($accounts as $account) {
-          if (isset($account["id"])) {
-	  ?>
-	    <h3 id="<?php echo $account["id"] ?>"><?php echo $account["name"] ?></h3>
-	    <div>
-	      <?php
-                $password = mailcwp_get_account_password($account);
-                //present password page
-                if (empty($password)) {
-                  echo mailcwp_login_dialog($account["id"]);
-                  echo "</div>";
-                } else {
-		  $mbox_name = $account["host"] . ":" . $account["port"];
-		  $use_ssl_flag = $account["use_ssl"] ? "/ssl" : "";
-		  $use_tls_flag = $account["use_tls"] ? "/tls" : "";
-    //write_log("ACCOUNT $account[name]: $account[use_ssl]");
-		  $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
-		  $folders = imap_listmailbox($mbox, "{" . $mbox_name . $use_ssl_flag . "}", "*");
-		  if ($folders === false) {
-		    echo __("No folders found.", "mailcwp");
+        for ($mode = 0; $mode <= 1; $mode++) {
+	  foreach ($accounts as $account) {
+	    if (isset($account["id"])) {
+              if (($mode == 0 && isset($default_account_id) && $account["id"] == $default_account_id) ||
+                  ($mode == 1 && isset($default_account_id) && $account["id"] != $default_account_id) ||
+                  !isset($default_account_id)) {
+	    ?>
+	      <h3 id="<?php echo $account["id"] ?>"><?php echo $account["name"] ?></h3>
+	      <div>
+		<?php
+		  $password = mailcwp_get_account_password($account);
+		  //present password page
+		  if (empty($password)) {
+		    echo mailcwp_login_dialog($account["id"]);
+		    echo "</div>";
 		  } else {
-		    $folder_tree = array();
-		    foreach ($folders as $folder) {
-		      $folder_name = substr($folder, strlen($mbox_name) + strlen($use_ssl_flag) + 2);
-		      if ($mailcwp_session == null) {
-			$mailcwp_session = array();
-			$mailcwp_session["account"] = $account;
-			$mailcwp_session["folder"] = $folder_name;
-			update_user_meta($current_user->ID, "mailcwp_session", $mailcwp_session);
+		    $mbox_name = $account["host"] . ":" . $account["port"];
+		    $use_ssl_flag = $account["use_ssl"] ? "/ssl" : "";
+		    $use_tls_flag = $account["use_tls"] ? "/tls" : "";
+      //write_log("ACCOUNT $account[name]: $account[use_ssl]");
+		    $mbox = mailcwp_imap_connect($account, OP_HALFOPEN, "");
+		    if (isset($mbox)) {
+		      $folders = imap_listmailbox($mbox, "{" . $mbox_name . $use_ssl_flag . "}", "*");
+		      if ($folders === false) {
+			echo __("No folders found.", "mailcwp");
+		      } else {
+			$folder_tree = array();
+			foreach ($folders as $folder) {
+			  $folder_name = substr($folder, strlen($mbox_name) + strlen($use_ssl_flag) + 2);
+			  if ($mailcwp_session == null) {
+			    $mailcwp_session = array();
+			    $mailcwp_session["account"] = $account;
+			    $mailcwp_session["folder"] = $folder_name;
+			    update_user_meta($current_user->ID, "mailcwp_session", $mailcwp_session);
+			  }
+			  add_folder_to_tree($folder_tree, $folder_name);
+			}
+			?>
+			<?php
+			  echo folder_menu($account["id"], $folder_tree, "", true);
+			?>
+			<?php
 		      }
-		      add_folder_to_tree($folder_tree, $folder_name);
-		    }
-		    ?>
-		    <?php
-		      echo folder_menu($account["id"], $folder_tree, "", true);
-		    ?>
-		    <?php
-		  }
 
-		  //$headers = imap_headers($mbox);
-		  imap_close($mbox);
-		  /*$folder_toolbar_html = "  <div id=\"mailcwp_folder_toolbar_$account[name]\" class=\"mailcwp_folder_toolbar ui-widget-header ui-corner-all\">" .
-		 (isset($options["user_manage_accounts"]) && $options["user_manage_accounts"] == true ? 
-		  "    <button id=\"mailcwp_folder_settings_$account[id]\" class=\"mailcwp_folder_settings\">" . __("Account Settings", "mailcwp") . "</button>" .
-		  "    <button id=\"mailcwp_close_account_$account[id]\" data=\"" . str_replace(" ", "_", $account["name"]) . "\" class=\"mailcwp_close_account\">" . __("Remove Account", "mailcwp") . "</button>" : "") .
-		  "  </div>";
-		  echo $folder_toolbar_html;*/
-		?>
-	      </div>
-	    <?php
+		      //$headers = imap_headers($mbox);
+		      imap_close($mbox);
+		    } else {
+			echo __("Unable to open mailbox. Please check the username and password.", "mailcwp");
+		    }
+		    /*$folder_toolbar_html = "  <div id=\"mailcwp_folder_toolbar_$account[name]\" class=\"mailcwp_folder_toolbar ui-widget-header ui-corner-all\">" .
+		   (isset($options["user_manage_accounts"]) && $options["user_manage_accounts"] == true ? 
+		    "    <button id=\"mailcwp_folder_settings_$account[id]\" class=\"mailcwp_folder_settings\">" . __("Account Settings", "mailcwp") . "</button>" .
+		    "    <button id=\"mailcwp_close_account_$account[id]\" data=\"" . str_replace(" ", "_", $account["name"]) . "\" class=\"mailcwp_close_account\">" . __("Remove Account", "mailcwp") . "</button>" : "") .
+		    "  </div>";
+		    echo $folder_toolbar_html;*/
+		  ?>
+		</div>
+	      <?php
+	    }
+	    }
           }
-          }
-	}
+	  }
+        }
         /*if (isset($options["user_manage_accounts"]) && $options["user_manage_accounts"] == true) {
         ?>
         <h3 id="mailcwp_add_account">Add Account</h3>
@@ -2777,19 +2880,29 @@ function mailcwp_handler ($atts, $content, $tag) {
 }
 
 function folder_menu($account_id, $folder_tree, $prefix = "", $root = false) {
+  $current_user = wp_get_current_user();
+  $account = mailcwp_get_account($current_user->ID, $account_id);
+  $default_folder = isset($account["default_folder"]) ? $account["default_folder"] : null;
+  if (!isset($efault_folder) || $default_folder == '') {
+    $default_folder = 'INBOX';
+  }
+
   $result = "";
   $class = $root ? "mailcwp_folders" : "";
   if (!empty($folder_tree)) {
     $result = "<ul class=\"$class\">";
-    if (isset($folder_tree["INBOX"])) {
-      $key = 'INBOX';
+    /*if (isset($folder_tree["INBOX"])) {
+      $key = 'INBOX';*/
+    if (isset($folder_tree[$default_folder])) {
+      $key = $default_folder;
       $result .= "<li><a href=\"javascript:void(0)\" onclick=\"getHeaders(false, 1, '$prefix$key', '$account_id')\">$key</a>";
       $result .= folder_menu($account_id, $folder_tree[$key], "$prefix$key.");
       $result .= "</li>";
     }
     $keys = array_keys($folder_tree);
     foreach ($keys as $key) {
-      if ($key != 'INBOX') {
+      //if ($key != 'INBOX') {
+      if ($key != $default_folder) {
 	$result .= "<li><a href=\"javascript:void(0)\" onclick=\"getHeaders(false, 1, '$prefix$key', '$account_id')\">$key</a>";
 	$result .= folder_menu($account_id, $folder_tree[$key], "$prefix$key.");
 	$result .= "</li>";
