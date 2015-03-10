@@ -1,0 +1,202 @@
+[
+    {
+        "theme_name": "base",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/base/jquery-ui.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "black-tie",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/black-tie/jquery-ui.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "blitzer",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-blitzer.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "cupertino",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-cupertino.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "dark-hive",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-dark-hive.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "dot-luv",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-dot-luv.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "eggplant",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-eggplant.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "excite-bike",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-excite-bike.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "flick",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-flick.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "hot-sneaks",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-hot-sneaks.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "humanity",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-humanity.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "le-frog",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-le-frog.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "mint-choc",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-mint-choc.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "overcast",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-overcast.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "pepper-grinder",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-pepper-grinder.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "redmond",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-redmond.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "smoothness",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-smoothness.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "south-street",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-south-street.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "start",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-start.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "sunny",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-sunny.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "swanky-purse",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-swanky-purse.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "trontastic",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-trontastic.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "ui-darkness",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-ui-darkness.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "ui-lightness",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-ui-lightness.css",
+        "group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    },
+    {
+        "theme_name": "vader",
+        "theme_url": "../wp-content/plugins/mailcwp/css/jquery-ui-themes/jquery-ui-vader.css",
+        group": "Official",
+        "active": "yes",
+        "author": "jQuery Project",
+        "license": "http://jquery.org/license"
+    }
+]
