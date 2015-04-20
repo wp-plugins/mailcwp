@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.97
+Version: 1.98
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.97);
+define ('MAILCWP_VERSION', 1.98);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -735,35 +735,36 @@ function mailcwp_admin_settings() {
   }
   echo "  <input type=\"hidden\" name=\"mailcwp_admin_submit\" value=\"Y\">";
   echo "  <h3>" . __("Display Options", "mailcwp") . "</h3>";
-  echo "  <p>" . __("Hide WordPress Admin Bar", "mailcwp") . ": <input type=\"checkbox\" name=\"hide_admin_bar\"" . ($hide_admin_bar ? " checked" : "") . "><br/>";
-  echo "  " . __("Hide Page Title", "mailcwp") . ": <input type=\"checkbox\" name=\"hide_page_title\"" . ($hide_page_title ? " checked" : "") . "></p>";
-  echo "  <h3>" . __("User Options", "mailcwp") . "</h3>";
-  echo "  <p>" . __("Allow user to manage accounts", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_manage_accounts\"" . ($user_can_manage_accounts ? " checked" : "") . "><br/>";
-  echo "  " . __("Allow user to change theme", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_change_theme\"" . ($user_can_change_theme ? " checked" : "") . "><br/>";
-  echo "  " . __("Default theme", "mailcwp") . ": <select name=\"default_theme\" id=\"default_theme\"></select><br/>";
-  echo "  " . __("Store passwords:", "mailcwp") . ": <input type=\"checkbox\" name=\"user_can_store_password\"" . ($user_can_store_password ? " checked" : "") . "></br>";
-  echo "  " . __("Maximum drop-down contacts", "mailcwp") . ": <select name=\"max_contacts\">";
+  echo "  <table class=\"form-table\"><tbody>";
+  echo "  <tr><th>" . __("Hide WordPress Admin Bar", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"hide_admin_bar\"" . ($hide_admin_bar ? " checked" : "") . "></td></tr>";
+  echo "  <tr><th>" . __("Hide Page Title", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"hide_page_title\"" . ($hide_page_title ? " checked" : "") . "></td</tr>";
+  echo "  </tbody></table><h3>" . __("User Options", "mailcwp") . "</h3>";
+  echo "  <table class=\"form-table\"><tbody><tr><th>" . __("Allow user to manage accounts", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"user_can_manage_accounts\"" . ($user_can_manage_accounts ? " checked" : "") . "></td></tr>";
+  echo "  <tr><th>" . __("Allow user to change theme", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"user_can_change_theme\"" . ($user_can_change_theme ? " checked" : "") . "></td></tr>";
+  echo "  <tr><th>" . __("Default theme", "mailcwp") . "</th><td> <select name=\"default_theme\" id=\"default_theme\"></select></td></tr>";
+  echo "  <tr><th>" . __("Store passwords:", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"user_can_store_password\"" . ($user_can_store_password ? " checked" : "") . "></td></tr>";
+  echo "  <tr><th>" . __("Maximum drop-down contacts", "mailcwp") . "</th><td> <select name=\"max_contacts\">";
   for ($i = 100; $i <= 1000; $i += 100) {
     echo "    <option value=\"$i\"" . ($i == $max_contacts ? " selected" : "") . ">$i</option>";
   }
-  echo "  </select></p>";
+  echo "  </select></td></tr>";
   echo "";
-  echo "  <p><h3>IMAP " . __("Timeouts", "mailcwp") . "</h3>";
-  echo "  " . __("Open", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_open_timeout\" value=\"$imap_open_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Read", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_read_timeout\" value=\"$imap_read_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Write", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_write_timeout\" value=\"$imap_write_timeout\">&nbsp;sec<br/>";
-  echo "  " . __("Close", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"imap_close_timeout\" value=\"$imap_close_timeout\">&nbsp;sec<br/></p>";
+  echo "  </tbody></table><h3>IMAP " . __("Timeouts", "mailcwp") . "</h3>";
+  echo "  <table class=\"form-table\"><tbody><tr><th>" . __("Open", "mailcwp") . "</th><td> <input type=\"text\" size=\"3\" name=\"imap_open_timeout\" value=\"$imap_open_timeout\">&nbsp;sec</td></tr>";
+  echo "  <tr><th>" . __("Read", "mailcwp") . "</th><td> <input type=\"text\" size=\"3\" name=\"imap_read_timeout\" value=\"$imap_read_timeout\">&nbsp;sec</td></tr>";
+  echo "  <tr><th>" . __("Write", "mailcwp") . "</th><td> <input type=\"text\" size=\"3\" name=\"imap_write_timeout\" value=\"$imap_write_timeout\">&nbsp;sec</td></tr>";
+  echo "  <tr><th>" . __("Close", "mailcwp") . "</th><td> <input type=\"text\" size=\"3\" name=\"imap_close_timeout\" value=\"$imap_close_timeout\">&nbsp;sec</td></tr></tbody></table>";
 
-  echo "  <p><h3>SMTP " . __("Timeouts", "mailcwp") . "</h3>";
-  echo "  " . __("Connect", "mailcwp") . ": <input type=\"text\" size=\"3\" name=\"smtp_connect_timeout\" value=\"$smtp_connect_timeout\">&nbsp;sec<br/></p>";
+  echo "  <h3>SMTP " . __("Timeouts", "mailcwp") . "</h3>";
+  echo "  <table class=\"form-table\"><tbody><th>" . __("Connect", "mailcwp") . "</th><td> <input type=\"text\" size=\"3\" name=\"smtp_connect_timeout\" value=\"$smtp_connect_timeout\">&nbsp;sec</td></tr></tbody></table>";
 
-  echo "  <p><h3>" . __("Refresh", "mailcwp") . "</h3>";
-  echo "  " . __("Auto Refresh", "mailcwp") . ": <input type=\"checkbox\" name=\"auto_refresh\"" . ($auto_refresh ? " checked" : "") . ">&nbsp;&nbsp;";
-  echo "  " . __("Refresh Interval", "mailcwp") . ": <select name=\"refresh_interval\">";
+  echo "  <h3>" . __("Refresh", "mailcwp") . "</h3>";
+  echo "  <table class=\"form-table\"><tbody><th>" . __("Auto Refresh", "mailcwp") . "</th><td> <input type=\"checkbox\" name=\"auto_refresh\"" . ($auto_refresh ? " checked" : "") . "></td></tr>";
+  echo "  <tr><th>" . __("Refresh Interval", "mailcwp") . "</th><td> <select name=\"refresh_interval\">";
   for ($i = 1; $i <= 10; $i++) {
     echo "    <option value=\"$i\"" . ($i == $refresh_interval ? " selected" : "") . ">$i</option>";
   }
-  echo "  </select>&nbsp;min</p>";
+  echo "  </select>&nbsp;min</td></tr></tbody></table>";
   echo "  <p class=\"submit\">";
   echo "    <input type=\"submit\" name=\"Submit\" class=\"button-primary\" value=\"" . __('Save Changes', "mailcwp") . "\"/>";
   echo "  </p>";
@@ -929,14 +930,16 @@ function mailcwp_get_account_callback () {
 function mailcwp_get_account ($user_id, $account_id) {
   $account = null;
 
-  $account_id = $account_id;
-  $user_mail_accounts = get_user_meta($user_id, "mailcwp_accounts", true);
-  $default_account_id = get_user_meta($user_id, "mailcwp_account_default", true);
-  foreach($user_mail_accounts as $user_mail_account) {
-    if ($user_mail_account["id"] == $account_id) {
-      $account = $user_mail_account;
-      if ($default_account_id == $account_id) {
-        $account["default"] = "true";
+  if (isset($account_id) && !empty($account_id)) {
+    //$account_id = $account_id;
+    $user_mail_accounts = get_user_meta($user_id, "mailcwp_accounts", true);
+    $default_account_id = get_user_meta($user_id, "mailcwp_account_default", true);
+    foreach($user_mail_accounts as $user_mail_account) {
+      if ($user_mail_account["id"] == $account_id) {
+	$account = $user_mail_account;
+	if ($default_account_id == $account_id) {
+	  $account["default"] = "true";
+	}
       }
     }
   }
@@ -1034,7 +1037,7 @@ function mailcwp_edit_account_callback () {
 //write_log("USER ACCOUNTS AFTER ASSIGNMENT " . print_r($user_mail_accounts, true));
 
     update_user_meta($user_id, "mailcwp_accounts", $user_mail_accounts);
-    if (isset($_POST["mailcwp_account_default"])) {
+    if (isset($_POST["mailcwp_account_default"]) && $_POST["mailcwp_account_default"] == "true") {
       update_user_meta($user_id, "mailcwp_account_default", $account_id);
     }
     do_action("mailcwp_account_edited", $account_id);
@@ -1225,7 +1228,7 @@ function mailcwp_get_unseen_messages($aAccount = null) {
 	    $unseen = imap_search($mbox, "UNSEEN");
 	    if (is_array($unseen) && count($unseen) > 0) {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name] (" . count($unseen) . ")\");";
-              $mustDing = empty($aAccount) && ($mustDing || (isset($account["alert_sound"]) && $account["alert_sound"]));
+              $mustDing = empty($aAccount) && ($mustDing || (isset($account["alert_sound"]) && $account["alert_sound"] == "true"));
 	    } else {
 	      echo "  jQuery(\"#$heading_id\").html(\"$account[name]\");";
 	    }
@@ -1494,18 +1497,18 @@ function mailcwp_get_message_callback() {
   //$html_message = apply_filters("mailcwp_get_html_message", $msg_number, $html_message, false);
   $plain_message = $message->getPlainMessage();
   //$plain_message = apply_filters("mailcwp_get_plain_message", $msg_number, $plain_message, false);
-//print_r( $html_message);
-//print_r( $plain_message);
+//error_log("HTML MESSAGE: " . $html_message);
+//error_log("PLAIN MESSAGE: " .  $plain_message);
   $attachments = $message->getAttachments();
   //$attachments = apply_filters("mailcwp_get_attachments", $msg_number, $attachments, false);
   $headers = $message->getHeaders();
-//write_log($headers);
+//error_log("HEADERS " . print_r($headers, true));
   $char_set = $message->getCharSet();
-//print_r($char_set);
+//error_log("CHARSET: " . $char_set);
 //exit;
 
   //process inline images
-  if (isset($html_message)) {
+  if (isset($html_message) && !empty($html_message)) {
     $vStartSrc = -1;
     while (($vStartSrc = strpos($html_message, "src=\"cid:", $vStartSrc + 1)) !== FALSE) {
       $vEndSrc = strpos($html_message, "\"", $vStartSrc + 5);
@@ -1643,12 +1646,12 @@ function mailcwp_get_message_callback() {
     $html .= "</div>";
   } else if (isset($plain_message) && !empty($plain_message)) {
     //$html .= "<pre>" . $plain_message . "</pre>";
-    if (strlen($plain_message) > 4096) {
+    if (strlen($plain_message) > 16384) {
       $html .= "The following message has been truncated:<br/>";
     }
-    $html .= "<pre>" . substr($plain_message, 0, 4096) . "</pre>";
+    $html .= "<pre>" . substr($plain_message, 0, 16384) . "</pre>";
   } else {
-    $html .= "<pre>NO HTML OR PLAIN TEXT</pre>";
+    $html .= "<pre>NO HTML OR PLAIN TEXT\n\n" . print_r($message, true) . "</pre>";
   }
 
   if (isset($attachments) && sizeof($attachments) > 0) {
@@ -1685,7 +1688,7 @@ function mailcwp_get_message_callback() {
   $javascript.= "  jQuery(\"#attachment_list\").hide().menu();";
   $javascript.= apply_filters("mailcwp_received_javascript", "");
 
-  $utf8_html = $html; //@utf8_encode($html);
+  $utf8_html = @utf8_encode($html);
   if ($utf8_html == null) {
     $utf8_html = $html;
   }
@@ -2017,7 +2020,11 @@ function mailcwp_compose_callback () {
   $upload_dir = wp_upload_dir();
   $mailcwp_upload_dir = "$upload_dir[basedir]/mailcwp/uploads";
   $upload_url = plugins_url("/mailcwp-upload.php", __FILE__);
-  $result = array("result" => "OK", "upload_dir" => $mailcwp_upload_dir, "upload_url" => $upload_url, "html" => $html, "javascript" => $javascript);
+  $utf8_html = @utf8_encode($html);
+  if ($utf8_html == null) {
+    $utf8_html = $html;
+  }
+  $result = array("result" => "OK", "upload_dir" => $mailcwp_upload_dir, "upload_url" => $upload_url, "html" => $utf8_html, "javascript" => $javascript);
 //write_log($result);
   echo json_encode($result);
   die();
@@ -2976,10 +2983,20 @@ add_action( 'admin_bar_menu', 'toolbar_link_to_mypage', 999 );
 function toolbar_link_to_mypage( $wp_admin_bar ) {
   $node = $wp_admin_bar->get_node("user-actions");
   if ($node) {
+    $url = "/mail";
+    $pages = get_pages();
+    echo "<pre>";
+    for ($i = 0; $i < count($pages) && $url == "/mail"; $i++) {
+      $page = $pages[$i];
+      if (has_shortcode($page->post_content, "mailcwp")) {
+        $url = $page->guid;
+      }
+    }
+    echo "</pre>";
     $args = array(
       'id' => 'mailcwp',
       'title' => 'Mail',
-      'href' => '/mail',
+      'href' => $url,
       'parent' => "user-actions"
     );
     $wp_admin_bar->add_node($args);

@@ -691,7 +691,7 @@ function setPageSize(aPageSize) {
       display_notice("Unable to set page size: " + aTextStatus + "/" + aErrorThrown); 
     }, 
     success: function (aData) { 
-console.log(aData);
+//console.log(aData);
       //alert(aHtml);
       jQuery("#progressbar").hide();
       jQuery(".ui-tooltip").hide();

@@ -38,7 +38,12 @@ function processAjaxResponse(aResponse) {
       display_notice(vData.message);
     } else {
       console.log(vData);
-      display_notice("An unexpected error has occurred.");
+      if (vData == "0") {
+        display_notice("Your session has expired. Please login again");
+        window.location = window.location.protocol + "//" + window.location.hostname + "/wp-login.php?redirect_to=" + window.location.href;
+      } else {
+        display_notice("An unexpected error has occurred.");
+      }
     }
     return false;
   }

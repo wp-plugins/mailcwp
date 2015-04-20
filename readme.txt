@@ -3,8 +3,8 @@ Contributors: CadreWorks Pty Ltd
 Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
-Tested up to: 4.1
-Stable tag: 1.97
+Tested up to: 4.2
+Stable tag: 1.98
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,56 +61,60 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Changelog ==
 
+= 1.98 =
+*Fix for read and compose failure with some messages requiring UTF-8 encoding.
+*Fix incoming mail alert sounding on all accounts reagrdless of setting
+*Fix admin bar menu URL
+*Improve MailCWP Settings page layout
+
 = 1.97 =
-Enhancements to support the MailCWP Calendar add-on.
-Set default folder for each account
-Set number of headers per page for each account
-Fix for conflicts with User Role Editor and other admin plugins
-Fix for duplicates created when adding new accounts
+*Enhancements to support the MailCWP Calendar add-on.
+*Fix for conflicts with User Role Editor plugin
+*Fix for duplicates created when added new accounts
 
 = 1.96 =
-Add localisation and translation files
-Fix for utf8 conversion issue when reading incoming mail
-Modify compose toolbar filter to support macros plugin
-Fix for pagination truncating header list 
+*Add localisation and translation files
+*Fix for utf8 conversion issue when reading incoming mail
+*Modify compose toolbar filter to support macros plugin
+*Fix for pagination truncating header list 
 
 = 1.95 =
-Strip slashes from email body when sending via SMTP
-Fix for pagination presentation issues
-Fix for formatting when composing replies to plain text messages
+*Strip slashes from email body when sending via SMTP
+*Fix for pagination presentation issues
+*Fix for formatting when composing replies to plain text messages
 
 = 1.94 =
-Fix for error when sending a message from an account with no configured Sent folder
+*Fix for error when sending a message from an account with no configured Sent folder
 
 = 1.93 =
-Fix for account with no timezone set causing compose to fail
+*Fix for account with no timezone set causing compose to fail
 
 = 1.92 =
-Add support for SMTP - optionally send mail via SMTP
-Add support for timezone setting on each account.
-Improve handling of expired sessions - automatically display WordPress login for expires sessions
+*Add support for SMTP - optionally send mail via SMTP
+*Add support for timezone setting on each account.
+*Improve handling of expired sessions - automatically display WordPress login for expires sessions
 
 = 1.91 =
-Fix for emzpng (and other file formats) causing attachment processing to fail.
+*Fix for emzpng (and other file formats) causing attachment processing to fail.
 
 = 1.9 =
-Fix for character encoding issue causing mail open failure.
-Reintroduce MailCWP account editor in user profile pages and fix conflicts.
+*Fix for character encoding issue causing mail open failure.
+*Reintroduce MailCWP account editor in user profile pages and fix conflicts.
 
 = 1.8 =
-v1.7 release did not included fix
+*v1.7 release did not included fix
 
 = 1.7 =
-Fix for no response when opening mail that includes HTML content or attachments
+*Fix for no response when opening mail that includes HTML content or attachments
 
 = 1.6 =
-Add author, date and time of original email in replied and forwards
+*Add author, date and time of original email in replied and forwards
 
 = 1.5 =
-Fix for date issue when sending mail
+*Fix for date issue when sending mail
 
 = 1.4 =
-Remove MailCWP settings from User Profile page to avoid conflicts.
+*Remove MailCWP settings from User Profile page to avoid conflicts.
 
 = 1.3 =
 * Minor corrections to readme.txt
@@ -126,65 +130,69 @@ Remove MailCWP settings from User Profile page to avoid conflicts.
 
 == Upgrade Notice ==
 
+= 1.98 =
+*Fix for read and compose failure with some messages requiring UTF-8 encoding.
+*Fix incoming mail alert sounding on all accounts reagrdless of setting
+*Fix admin bar menu URL
+*Improve MailCWP Settings page layout
+
 = 1.97 =
-Enhancements to support the MailCWP Calendar add-on.
-Set default folder for each account
-Set number of headers per page for each account
-Fix for conflicts with User Role Editor and other admin plugins
-Fix for duplicates created when adding new accounts
+*Enhancements to support the MailCWP Calendar add-on.
+*Fix for conflicts with User Role Editor plugin
+*Fix for duplicates created when added new accounts
 
 = 1.96 =
-Add localisation and translation files
-Fix for utf8 conversion issue when reading incoming mail
-Modify compose toolbar filter to support macros plugin
-Fix for pagination truncating header list 
+*Add localisation and translation files
+*Fix for utf8 conversion issue when reading incoming mail
+*Modify compose toolbar filter to support macros plugin
+*Fix for pagination truncating header list 
 
 = 1.95 =
-Strip slashes from email body when sending via SMTP
-Fix for pagination presentation issues
-Fix for formatting when composing replies to plain text messages
+*Strip slashes from email body when sending via SMTP
+*Fix for pagination presentation issues
+*Fix for formatting when composing replies to plain text messages
 
 = 1.94 =
-Fix for error when sending a message from an account with no configured Sent folder
+*Fix for error when sending a message from an account with no configured Sent folder
 
 = 1.93 =
-Fix for account with no timezone set causing compose to fail
+*Fix for account with no timezone set causing compose to fail
 
 = 1.92 =
-Add support for SMTP - optionally send mail via SMTP
-Add support for timezone setting on each account.
-Improve handling of expired sessions - automatically display WordPress login for expires sessions
+*Add support for SMTP - optionally send mail via SMTP
+*Add support for timezone setting on each account.
+*Improve handling of expired sessions - automatically display WordPress login for expires sessions
 
 = 1.91 =
-Fix for emzpng (and other file formats) causing attachment processing to fail.
+*Fix for emzpng (and other file formats) causing attachment processing to fail.
 
 = 1.9 =
-Fix for character encoding issue causing mail open failure.
-Reintroduce MailCWP account editor in user profile pages and fix conflicts.
+*Fix for character encoding issue causing mail open failure.
+*Reintroduce MailCWP account editor in user profile pages and fix conflicts.
 
 = 1.8 =
-v1.7 release did not included fix
+*v1.7 release did not included fix
 
 = 1.7 =
-Fix for no response when opening mail that includes HTML content or attachments
+*Fix for no response when opening mail that includes HTML content or attachments
 
 = 1.6 =
-Add author, date and time of original email in replied and forwards
+*Add author, date and time of original email in replied and forwards
 
 = 1.5 =
-Fix for date issue when sending mail
+*Fix for date issue when sending mail
 
 = 1.4 =
-Remove MailCWP settings from User Profile page to avoid conflicts.
+*Remove MailCWP settings from User Profile page to avoid conflicts.
 
 = 1.3 =
-Minor corrections to readme.txt
+*Minor corrections to readme.txt
 
 = 1.2 =
-Fix for blank multipart/alternative messages
+*Fix for blank multipart/alternative messages
 
 = 1.1 =
-Updates follwing WordPress.org review
+*Updates follwing WordPress.org review
 
 = 1.0 =
-First release.
+*First release.

@@ -45,7 +45,6 @@ class MailMessage {
 
       // BODY
       $s = imap_fetchstructure($mbox,$mid);
-//write_log($s);
       if (!isset($s->parts))  // simple
 	  $this->getMessagePart($mbox,$mid,$s,0);  // pass 0 as part-number
       else {  // multipart: cycle through each part
@@ -91,9 +90,7 @@ class MailMessage {
       if ($p->type==0 && $data) {
 	  // Messages may be split in different parts because of inline attachments,
 	  // so append parts together with blank row.
-//write_log($partno);
-//write_log($p);
-          if (strpos($partno, "1") === 0 || strpos($partno, ".") === FALSE) {
+          if (($partno == "0" || strpos($partno, "1") === 0) || strpos($partno, ".") === FALSE) {
    	      if (strtolower($p->subtype)=='plain')
                   $this->plain_message .= trim($data) ."\n\n";
 	      else
