@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.98
+Version: 1.99
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.98);
+define ('MAILCWP_VERSION', 1.99);
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -1688,10 +1688,11 @@ function mailcwp_get_message_callback() {
   $javascript.= "  jQuery(\"#attachment_list\").hide().menu();";
   $javascript.= apply_filters("mailcwp_received_javascript", "");
 
-  $utf8_html = @utf8_encode($html);
-  if ($utf8_html == null) {
+//encoding of the message has already taken place
+  //$utf8_html = @utf8_encode($html);
+  //if ($utf8_html == null) {
     $utf8_html = $html;
-  }
+  //}
 
   $result = array("result" => "OK", "html" => $utf8_html, "javascript" => $javascript);
   echo json_encode($result);
