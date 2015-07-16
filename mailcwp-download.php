@@ -1,4 +1,9 @@
 <?php
+require_once "../../../wp-load.php";
+
+if (!is_user_logged_in()) {
+  echo "Download failed. User not logged in.";
+}
   require_once("classes/MailMessage.class.php");
 //print_r($_POST);
   $download_data = explode("::", base64_decode($_POST["download_data"]));
@@ -59,7 +64,7 @@
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
     header('Content-Length: ' . sizeof($download_data));
-    ob_clean();
+    @ob_clean();
     flush(); 
     print $download_data;
     flush(); 

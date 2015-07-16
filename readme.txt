@@ -4,7 +4,7 @@ Donate link: http://cadreworks.com/mailcwp-plugin/#support-development
 Tags: mail, imap, smtp, email, pop3, message, communication, webmail
 Requires at least: 3.8.0
 Tested up to: 4.2
-Stable tag: 1.99
+Stable tag: 1.100
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,6 +60,10 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 3. The Options dialog. Add/Edit IMAP accounts and setup Sent, Trash and Drafts folders.
 
 == Changelog ==
+
+= 1.100 =
+* Address file upload and download vulnerability
+* More work done to avoid character encoding issues
 
 = 1.99 =
 * Tweaks for character encoding issues
@@ -133,7 +137,11 @@ For Gmail use your email address as the username. Port is 993 and toggle on SSL 
 
 == Upgrade Notice ==
 
-= 1.98 =
+= 1.100 =
+* Address file upload and download vulnerability
+* More work done to avoid character encoding issues
+
+= 1.99 =
 * Tweaks for character encoding issues
 
 = 1.98 =

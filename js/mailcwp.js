@@ -773,7 +773,7 @@ function getHeaders(aAllAccounts, aPage, aFolder, aAccount) {
   }
 }
 
-function getMessage(aFolderName, aMessageNumber, aSubject) {
+function getMessage(aFolderName, aMessageNumber, aSubject, aForceEncode) {
   //jQuery("#mailcwp_headers").html(aMailbox + "/" + aUsername + "/" + aPassword + "/" + aFolderName);
     jQuery("#progressbar").show();
     jQuery.ajax ({
@@ -782,7 +782,8 @@ function getMessage(aFolderName, aMessageNumber, aSubject) {
       data: { 
         action: "mailcwp_get_message",
         msg_number: aMessageNumber,
-        subject: aSubject
+        subject: aSubject,
+        force_encode: aForceEncode
       }, 
       error: function(aObject, aTextStatus, aErrorThrown) { 
         jQuery("#progressbar").hide();

@@ -4,11 +4,11 @@ Plugin Name: MailCWP
 Plugin URI: http://wordpress.org/plugins/mailcwp/
 Description: A full-featured mail client for WordPress.
 Author: CadreWorks Pty Ltd
-Version: 1.99
+Version: 1.100
 Author URI: http://cadreworks.com
 */
 
-define ('MAILCWP_VERSION', 1.99);
+define ('MAILCWP_VERSION', '1.100');
 define ('COMPOSE_REPLY', 0);
 define ('COMPOSE_REPLY_ALL', 1);
 define ('COMPOSE_FORWARD', 2);
@@ -1408,7 +1408,7 @@ update_user_meta($current_user->ID, "mailcwp_accounts", $accounts);
 //write_log($folder . "===" . $sent_folder);
   $html .= apply_filters("mailcwp_paging_toolbar", $paging_toolbar);
   $html .= "<table><thead><th class=\"ui-widget-header\"><input type=\"checkbox\" id=\"select-all\" onclick=\"selectAll()\"></th><th class=\"ui-widget-header\">Date</th><th class=\"ui-widget-header\">" . ($folder == $sent_folder ? "To" : "From") . "</th><th class=\"ui-widget-header\">Subject</th></thead><tbody>";
-  for ($i = $start; $i >= $end; $i--) {
+  for ($i = $start; $i > $end; $i--) {
     $header_info = imap_headerinfo($mbox, $search_result[$i]);
     $class = "";
     if ($header_info->Recent == 'N' || $header_info->Unseen == 'U') {
@@ -1602,6 +1602,7 @@ function mailcwp_get_message_callback() {
       $message_toolbar_html .= plugins_url("mailcwp-download.php", __FILE__);
       $message_toolbar_html .= "\" method=\"post\">";
       $message_toolbar_html .= "  <input type=\"hidden\" name=\"download_data\" value=\"$download_data\">";
+      $message_toolbar_html .= "  <input type=\"hidden\" name=\"download_dir\" value=\"$mailcwp_download_dir\">";
       $message_toolbar_html .= "</form>";
     }
     $message_toolbar_html .= "</div>";
@@ -1620,6 +1621,7 @@ function mailcwp_get_message_callback() {
   $html .= "  <div id=\"mailcwp-content-$dialog_id\" class=\"mailcwp_content ui-widget-content ui-corner-bottom\">";
   //$html .= (isset($message->getHtmlMessage()) ? $message->getHtmlMessage() : $message->getPlainMessage());
   if (isset($html_message) && !empty($html_message)) {
+$conv_flag = "[none]";
     $html .= "<div class=\"mailcwp_html_message yui3-cssreset\">";
     if (!empty($char_set)) {
       set_error_handler('my_error_handler', E_ALL);
@@ -1689,12 +1691,16 @@ function mailcwp_get_message_callback() {
   $javascript.= apply_filters("mailcwp_received_javascript", "");
 
 //encoding of the message has already taken place
-  //$utf8_html = @utf8_encode($html);
-  //if ($utf8_html == null) {
+  if (false) {
+    $utf8_html = @utf8_encode($html);
+  }
+  if ($utf8_html == null) {
     $utf8_html = $html;
-  //}
+  }
 
-  $result = array("result" => "OK", "html" => $utf8_html, "javascript" => $javascript);
+  $fixed_msg = @iconv("UTF-8", "UTF-8//IGNORE", $utf8_html);
+
+  $result = array("result" => "OK", "html" => $fixed_msg, "javascript" => $javascript);
   echo json_encode($result);
   die();
 }
